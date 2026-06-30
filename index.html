@@ -604,18 +604,25 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{
      because "Jalankan Prediksi / Run Prediction" needs real room. Stack it
      vertically -- team A, then the VS+button, then team B. */
   .matchup-picker{grid-template-columns:1fr;gap:16px;padding:16px;}
-  .picker-vs{flex-direction:row;justify-content:center;gap:12px;order:2;}
+  .picker-vs{flex-direction:column;gap:10px;order:2;width:100%;}
   .picker-side:first-of-type{order:1;}
   .picker-side:last-of-type{order:3;}
   .picker-select{max-width:100%;}
-  .predict-btn{font-size:12.5px;padding:10px 16px;}
+  .predict-btn{font-size:12.5px;padding:10px 16px;width:100%;justify-content:center;}
+  .vs-badge{margin:0 auto;}
   .quick-fixture-btn{font-size:11px;padding:6px 10px;}
 
   /* AI step readouts / factor bars: narrower label columns so the numeric
      value never gets pushed past the edge of the card */
   .readout-grid{grid-template-columns:1fr;gap:8px;}
   .dual-factor-block{grid-template-columns:1fr;gap:14px;}
-  .factor-anim-row{grid-template-columns:72px 1fr 32px;gap:6px;}
+  .factor-anim-row{grid-template-columns:78px 1fr 34px;gap:6px;}
+  .factor-anim-name{
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+    font-size:10px;
+  }
   .poisson-wrap{grid-template-columns:1fr;gap:14px;}
   .verdict-main{gap:12px;}
   .verdict-flags{font-size:28px;}
@@ -662,6 +669,8 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{
   .row-pct{font-size:14px;min-width:48px;}
   .detail-name{font-size:18px;}
   .gt-head,.gt-row{grid-template-columns:18px 1fr 24px 22px 22px 22px 30px 34px;}
+  .factor-anim-row{grid-template-columns:66px 1fr 30px;}
+  .factor-anim-name{font-size:9px;}
 }
 
 </style>
