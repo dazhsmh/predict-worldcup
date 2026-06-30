@@ -1,0 +1,2327 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Prediksi AI — Piala Dunia FIFA 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700;800&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0A0E14; --bg-panel:#10161F; --bg-panel2:#151D29; --bg-deep:#070A0F;
+  --line:#232C3A; --line-soft:#1A222F;
+  --text:#EDEEE9; --text-mute:#8B95A5; --text-faint:#5A6376;
+  --gold:#D4A72C; --gold-soft:#3A331C; --gold-glow:rgba(212,167,44,.35);
+  --green:#4FAE6E; --green-soft:#16291D;
+  --red:#E1503F; --red-soft:#2E1714;
+  --blue:#4D8FD6; --blue-soft:#16212E;
+  --purple:#9B7FD4;
+  --radius:14px; --radius-sm:10px;
+  --ff-display:'Space Grotesk',sans-serif;
+  --ff-body:'Inter',-apple-system,sans-serif;
+  --ff-mono:'JetBrains Mono',monospace;
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family:var(--ff-body);}
+body{min-height:100vh;}
+::selection{background:var(--gold-glow);}
+a{color:inherit;text-decoration:none;}
+button{font-family:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent;}
+input,select{font-family:inherit;}
+::-webkit-scrollbar{height:6px;width:6px;}
+::-webkit-scrollbar-thumb{background:var(--line);border-radius:3px;}
+button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{
+  outline:2px solid var(--gold);outline-offset:2px;border-radius:6px;
+}
+@media (prefers-reduced-motion: reduce){
+  *{animation-duration:.01ms !important;transition-duration:.01ms !important;}
+}
+
+/* ---------------- HEADER ---------------- */
+.hdr{border-bottom:1px solid var(--line);background:var(--bg-panel);position:sticky;top:0;z-index:30;}
+.hdr-inner{max-width:1080px;margin:0 auto;padding:14px 18px;display:flex;align-items:center;gap:14px;}
+.brand{display:flex;align-items:center;gap:12px;flex:1;min-width:0;}
+.brand-mark{
+  width:38px;height:38px;border-radius:10px;flex-shrink:0;
+  background:linear-gradient(135deg,var(--gold),#8a6d1a);
+  display:flex;align-items:center;justify-content:center;font-size:18px;
+  box-shadow:0 2px 12px rgba(212,167,44,.25);
+}
+.brand-name{font-size:16.5px;font-weight:800;font-family:var(--ff-display);letter-spacing:-.01em;}
+.brand-sub{font-size:11px;color:var(--text-mute);margin-top:-1px;}
+.hdr-right{display:flex;align-items:center;gap:10px;}
+.live-pill{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text-mute);font-family:var(--ff-mono);}
+.live-dot{position:relative;display:inline-flex;width:8px;height:8px;border-radius:50%;background:var(--text-faint);}
+.live-dot.on{background:var(--green);animation:pulseDot 1.6s ease-in-out infinite;}
+@keyframes pulseDot{0%,100%{box-shadow:0 0 0 0 rgba(225,80,63,.55);}50%{box-shadow:0 0 0 6px rgba(225,80,63,0);}}
+.lang-btn{
+  background:var(--bg-panel2);border:1px solid var(--line);border-radius:8px;padding:7px 12px;
+  color:var(--text);font-size:12.5px;font-weight:700;font-family:var(--ff-mono);transition:border-color .15s;
+}
+.lang-btn:hover{border-color:var(--gold);}
+
+.tabs{max-width:1080px;margin:0 auto;padding:0 18px;display:flex;gap:2px;overflow-x:auto;scrollbar-width:none;}
+.tabs::-webkit-scrollbar{display:none;}
+.tab{
+  display:flex;align-items:center;gap:6px;padding:10px 12px;background:none;border:none;
+  border-bottom:2px solid transparent;color:var(--text-mute);font-size:12.5px;font-weight:600;
+  white-space:nowrap;flex-shrink:0;transition:color .15s,border-color .15s;
+}
+.tab .tab-ic{font-size:13px;}
+.tab:hover{color:var(--text);}
+.tab.active{color:var(--text);border-bottom-color:var(--gold);}
+
+/* ---------------- MAIN / PANELS ---------------- */
+.main{max-width:1080px;margin:0 auto;padding:20px 18px 60px;}
+.panel{display:none;animation:fadeUp .35s ease both;}
+.panel.active{display:block;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+
+/* ============================================================================
+   CINEMATIC FADE-IN SYSTEM
+   ============================================================================
+   Additive layer only -- no existing rule above is modified. Drives three
+   things: (1) a one-time "boot" fade-in for the whole app shell on first
+   load, (2) a richer per-section staggered fade+rise whenever a tab panel
+   becomes active (replacing nothing -- .panel.active keeps working exactly
+   as before, this just choreographs the children inside it), and (3) a
+   scroll-triggered fade-in-from-below for sections as the user scrolls,
+   via IntersectionObserver + a small reveal class toggled by JS.
+   ============================================================================ */
+@keyframes appBootIn{
+  from{opacity:0;transform:translateY(14px) scale(.992);filter:blur(4px);}
+  to{opacity:1;transform:translateY(0) scale(1);filter:blur(0);}
+}
+#app.boot-in{animation:appBootIn .5s cubic-bezier(.16,.8,.24,1) both;}
+
+@keyframes hdrSlideIn{
+  from{opacity:0;transform:translateY(-10px);}
+  to{opacity:1;transform:translateY(0);}
+}
+.hdr.boot-in{animation:hdrSlideIn .5s cubic-bezier(.16,.8,.24,1) both;}
+
+/* Per-tab entrance: every direct "section block" inside the active panel
+   gets a staggered fade-up the moment a tab is opened. .reveal-stagger is
+   applied by JS to direct children of the panel right after we render its
+   innerHTML, so this never needs new markup anywhere in the templates. */
+@keyframes sectionFadeIn{
+  from{opacity:0;transform:translateY(16px);}
+  to{opacity:1;transform:translateY(0);}
+}
+.reveal-stagger{
+  animation:sectionFadeIn .5s cubic-bezier(.16,.8,.24,1) both;
+}
+
+/* Scroll-driven reveal: elements start invisible/lowered, then JS adds
+   .in-view via IntersectionObserver as they cross into the viewport while
+   scrolling. Reduced-motion users (handled globally above) get an instant
+   snap instead of an animated transition. */
+.scroll-reveal{
+  opacity:0;
+  transform:translateY(28px);
+  transition:opacity .5s cubic-bezier(.16,.8,.24,1), transform .5s cubic-bezier(.16,.8,.24,1);
+  will-change:opacity, transform;
+}
+.scroll-reveal.in-view{
+  opacity:1;
+  transform:translateY(0);
+}
+
+.section-label{display:flex;align-items:center;gap:8px;margin-bottom:14px;}
+.section-label .bar{width:3px;height:14px;border-radius:2px;background:var(--gold);}
+.section-label span.lbl{
+  font-family:var(--ff-mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--text-mute);font-weight:600;
+}
+.section-sub{font-size:12.5px;color:var(--text-mute);margin-top:-6px;margin-bottom:14px;}
+
+/* ---------------- STAT STRIP ---------------- */
+.stat-strip{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1px;
+  background:var(--line);border-radius:12px;overflow:hidden;margin-bottom:22px;border:1px solid var(--line);
+}
+.stat-cell{background:var(--bg-panel);padding:16px 18px;}
+.stat-val{font-family:var(--ff-mono);font-size:28px;font-weight:700;color:#d4a72c;line-height:1;}
+.stat-lbl{font-size:11px;color:white;margin-top:6px;}
+
+/* ---------------- WIN PROBABILITY BOARD ---------------- */
+.board{background:var(--bg-panel);border:1px solid var(--line);border-radius:14px;padding:10px 18px 18px;}
+.board-row{
+  display:grid;grid-template-columns:28px 30px 1fr auto;align-items:center;gap:12px;
+  width:100%;padding:10px 4px;background:transparent;border:none;border-bottom:1px solid var(--line-soft);
+  text-align:left;
+}
+.board-row:last-child{border-bottom:none;}
+.board-row:hover .row-name{color:var(--gold);}
+.rank-num{font-family:var(--ff-mono);font-size:13px;font-weight:700;color:var(--text-faint);}
+.rank-num.first{color:var(--gold);}
+.flag{font-size:22px;color:silver;line-height:1;display:inline-block;filter:drop-shadow(0 1px 2px rgba(0,0,0,.4));}
+.row-name{font-size:14.5px;color:var(--text);font-weight:600;margin-bottom:5px;transition:color .15s;}
+.host-badge{
+  margin-left:8px;font-size:9.5px;color:var(--green);border:1px solid rgba(79,174,110,.35);
+  border-radius:4px;padding:1px 5px;font-family:var(--ff-mono);white-space:nowrap;display:inline-block;
+}
+.sparkbar{width:100%;height:5px;background:var(--line-soft);border-radius:3px;overflow:hidden;}
+.sparkbar-fill{height:100%;border-radius:3px;transition:width 900ms cubic-bezier(.2,.8,.2,1);}
+.row-pct{font-family:var(--ff-mono);font-size:17px;font-weight:700;color:var(--text);min-width:64px;text-align:right;}
+.row-pct.first{color:var(--gold);}
+.delta-chip{
+  font-family:var(--ff-mono);font-size:10px;font-weight:700;border-radius:4px;padding:1px 5px;margin-left:6px;
+}
+.delta-up{color:var(--green);background:rgba(79,174,110,.12);}
+.delta-down{color:var(--red);background:rgba(225,80,63,.12);}
+
+/* ---------------- INFO CARDS ---------------- */
+.info-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;}
+.info-card{
+  background:var(--bg-panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px;
+  display:flex;gap:12px;align-items:flex-start;
+}
+.info-ic{font-size:20px;}
+.info-title{font-size:13.5px;color:var(--text);font-weight:600;line-height:1.3;}
+.info-sub{font-size:11.5px;color:var(--text-mute);margin-top:4px;}
+
+/* ---------------- TEAMS GRID/LIST ---------------- */
+.search-row{display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap;}
+.search-input{
+  flex:1 1 220px;background:var(--bg-panel);border:1px solid var(--line);border-radius:10px;
+  padding:10px 14px;color:var(--text);font-size:13.5px;outline:none;transition:border-color .15s;
+}
+.search-input:focus{border-color:var(--gold);}
+.group-select{
+  background:var(--bg-panel);border:1px solid var(--line);border-radius:10px;padding:10px 12px;
+  color:var(--text);font-size:13px;outline:none;
+}
+.teams-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px;}
+.team-card{
+  display:flex;align-items:center;gap:12px;text-align:left;background:var(--bg-panel);
+  border:1px solid var(--line);border-radius:12px;padding:12px 14px;transition:border-color .15s,transform .15s;
+}
+.team-card:hover{border-color:var(--gold);transform:translateY(-1px);}
+.team-card-name{font-size:14px;color:var(--text);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.team-card-meta{font-size:11px;color:var(--text-mute);margin-top:2px;font-family:var(--ff-mono);}
+.team-card-pct{font-size:15px;font-family:var(--ff-mono);font-weight:700;color:var(--gold);}
+
+/* ---------------- TEAM DETAIL ---------------- */
+.back-btn{
+  display:flex;align-items:center;gap:6px;background:none;border:none;color:var(--text-mute);
+  font-size:13px;margin-bottom:16px;padding:0;transition:color .15s;
+}
+.back-btn:hover{color:var(--text);}
+.detail-head{display:flex;align-items:center;gap:16px;margin-bottom:20px;flex-wrap:wrap;}
+.detail-flag{font-size:48px;filter:drop-shadow(0 1px 2px rgba(0,0,0,.4));}
+.detail-name{font-size:24px;font-weight:800;font-family:var(--ff-display);margin:0;}
+.detail-meta{font-size:12.5px;color:var(--text-mute);margin-top:4px;font-family:var(--ff-mono);}
+.detail-pct-wrap{margin-left:auto;text-align:right;}
+.detail-pct-lbl{font-size:11px;color:var(--text-mute);}
+.detail-pct{font-size:30px;font-weight:800;color:var(--gold);font-family:var(--ff-mono);line-height:1;}
+
+.detail-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px;margin-bottom:14px;}
+.card{background:var(--bg-panel);border:1px solid var(--line);border-radius:14px;padding:14px;}
+.map-wrap{
+  position:relative;width:100%;padding-bottom:62%;border-radius:10px;overflow:hidden;
+  background:#0d1620;border:1px solid var(--line-soft);
+}
+.map-iframe{position:absolute;inset:0;width:100%;height:100%;border:0;}
+.map-loading{
+  position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  background:#0d1620;z-index:1;pointer-events:none;
+}
+.map-spinner{
+  width:26px;height:26px;border-radius:50%;border:3px solid var(--line);border-top-color:var(--blue);
+  animation:spin .8s linear infinite;
+}
+.map-foot{display:flex;justify-content:space-between;align-items:center;margin-top:10px;font-size:11.5px;color:var(--text-mute);gap:10px;}
+.map-open-link{
+  color:var(--blue);font-weight:600;white-space:nowrap;flex-shrink:0;transition:color .15s;
+}
+.map-open-link:hover{color:var(--gold);}
+.stat-row{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--line-soft);}
+.stat-row:last-child{border-bottom:none;}
+.stat-row-lbl{font-size:12.5px;color:var(--text-mute);}
+.stat-row-val{font-size:13px;color:var(--text);font-family:var(--ff-mono);font-weight:600;}
+
+.factor-row{margin-bottom:12px;}
+.factor-head{display:flex;justify-content:space-between;margin-bottom:5px;}
+.factor-name{font-size:12.5px;color:var(--text);}
+.factor-val{font-size:12px;color:var(--text-mute);font-family:var(--ff-mono);}
+.factor-val .wt{color:var(--text-faint);}
+.strength-total{
+  margin-top:14px;padding-top:14px;border-top:1px solid var(--line-soft);
+  display:flex;justify-content:space-between;align-items:center;
+}
+.strength-total-lbl{font-size:13px;font-weight:600;color:var(--text);}
+.strength-total-val{font-size:22px;font-weight:800;color:var(--gold);font-family:var(--ff-mono);}
+
+/* ---------------- GROUPS TAB ---------------- */
+.group-pills{display:flex;gap:6px;overflow-x:auto;padding-bottom:10px;margin-bottom:12px;}
+.group-pill{
+  min-width:38px;height:38px;border-radius:9px;border:1px solid var(--line);background:var(--bg-panel);
+  color:var(--text-mute);font-family:var(--ff-mono);font-weight:700;font-size:14px;flex-shrink:0;transition:.15s;
+}
+.group-pill.active{border-color:var(--gold);background:var(--gold-soft);color:var(--gold);}
+.group-table-wrap{background:var(--bg-panel);border:1px solid var(--line);border-radius:14px;overflow:auto;}
+.group-table-inner{min-width:360px;}
+.gt-head,.gt-row{display:grid;grid-template-columns:24px 1fr 30px 26px 26px 26px 38px 42px;gap:3px;align-items:center;}
+.gt-head{padding:10px 12px;font-size:10.5px;color:var(--text-faint);letter-spacing:.06em;
+  border-bottom:1px solid var(--line);font-family:var(--ff-mono);}
+.gt-row{padding:11px 12px;border-bottom:1px solid var(--line-soft);}
+.gt-row:last-child{border-bottom:none;}
+.gt-row.qual{background:rgba(22,41,29,.35);}
+.gt-rank{font-family:var(--ff-mono);font-size:12.5px;font-weight:700;color:var(--text-faint);}
+.gt-rank.qual{color:var(--green);}
+.gt-team{display:flex;align-items:center;gap:8px;font-size:13.5px;color:var(--text);font-weight:600;overflow:hidden;}
+.gt-team span.nm{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.gt-cell{text-align:center;font-size:12.5px;color:var(--text-mute);font-family:var(--ff-mono);}
+.gt-pts{text-align:right;font-size:15px;color:var(--text);font-weight:800;font-family:var(--ff-mono);}
+.empty-note{padding:24px;text-align:center;color:var(--text-mute);font-size:13px;}
+.legend-row{display:flex;gap:16px;margin-top:10px;font-size:11px;color:var(--text-mute);}
+.legend-swatch{display:inline-block;width:9px;height:9px;border-radius:2px;background:var(--green-soft);
+  border:1px solid var(--green);margin-right:6px;}
+
+/* ---------------- OVERALL TAB ---------------- */
+.champion-card{
+  background:linear-gradient(135deg,var(--gold-soft) 0%,var(--bg-panel) 70%);
+  border:1px solid rgba(212,167,44,.27);border-radius:16px;padding:22px 20px;margin-bottom:18px;
+  display:flex;align-items:center;gap:18px;flex-wrap:wrap;position:relative;overflow:hidden;
+}
+.champion-card::before{
+  content:"";position:absolute;top:-50%;right:-20%;width:60%;height:200%;
+  background:radial-gradient(circle,rgba(212,167,44,.08),transparent 60%);pointer-events:none;
+}
+.champion-flag{font-size:56px;}
+.champion-eyebrow{font-size:11px;color:var(--gold);letter-spacing:.1em;font-family:var(--ff-mono);margin-bottom:4px;}
+.champion-name{font-size:26px;font-weight:800;color:var(--text);font-family:var(--ff-display);}
+.champion-meta{font-size:12.5px;color:var(--text-mute);margin-top:4px;}
+.champion-pct-wrap{text-align:right;margin-left:auto;}
+.champion-pct{font-size:38px;font-weight:800;color:var(--gold);font-family:var(--ff-mono);line-height:1;}
+.ai-box{background:var(--bg-panel2);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:22px;}
+.ai-box p{font-size:13.5px;color:var(--text);line-height:1.65;margin:0;}
+.overall-row{display:grid;grid-template-columns:34px 24px 1fr 70px;gap:10px;align-items:center;
+  padding:9px 14px;border-bottom:1px solid var(--line-soft);}
+.overall-row:last-child{border-bottom:none;}
+.overall-rank{font-family:var(--ff-mono);font-size:12px;font-weight:700;color:var(--text-faint);}
+.overall-rank.top3{color:var(--gold);}
+.overall-name{font-size:13px;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.overall-pct{text-align:right;font-family:var(--ff-mono);font-size:13px;font-weight:700;color:var(--text);}
+.overall-pct.top{color:var(--gold);}
+.list-card{background:var(--bg-panel);border:1px solid var(--line);border-radius:14px;overflow:hidden;}
+
+/* ---------------- HIGHLIGHTS TAB ---------------- */
+.highlights-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;}
+.hl-card{background:var(--bg-panel);border:1px solid var(--line);border-radius:14px;overflow:hidden;}
+.hl-thumb-btn{
+  position:relative;display:block;width:100%;padding:0;border:none;background:#000;
+  aspect-ratio:16/9;overflow:hidden;
+}
+.hl-thumb-img{
+  position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:transform .35s ease,filter .35s ease;
+}
+.hl-thumb-btn:hover .hl-thumb-img{transform:scale(1.04);filter:brightness(.75);}
+.hl-play-overlay{
+  position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(180deg,rgba(0,0,0,.05) 0%,rgba(0,0,0,.35) 100%);
+}
+.hl-play-icon{
+  width:52px;height:52px;border-radius:50%;background:rgba(225,80,63,.92);color:#fff;
+  display:flex;align-items:center;justify-content:center;font-size:18px;padding-left:3px;
+  box-shadow:0 4px 18px rgba(0,0,0,.4);transition:transform .2s ease,background .2s ease;
+}
+.hl-thumb-btn:hover .hl-play-icon{transform:scale(1.1);background:var(--red);}
+.hl-video-wrap{position:relative;width:100%;padding-bottom:56.25%;background:#000;}
+.hl-video-iframe{position:absolute;inset:0;width:100%;height:100%;border:none;}
+.hl-body{padding:12px 14px;}
+.hl-score-row{display:flex;align-items:center;gap:8px;margin-bottom:6px;}
+.hl-score{font-size:11px;color:var(--text-faint);font-family:var(--ff-mono);}
+.hl-group{margin-left:auto;font-size:10px;color:var(--text-faint);font-family:var(--ff-mono);}
+.hl-title{font-size:13px;color:var(--text);font-weight:600;line-height:1.3;}
+.hl-link{display:inline-flex;align-items:center;gap:6px;margin-top:8px;font-size:11.5px;color:var(--red);}
+
+/* ---------------- RULES TAB ---------------- */
+.rules-intro{font-size:13.5px;color:var(--text);line-height:1.6;margin-bottom:20px;}
+.rule-card{background:var(--bg-panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px;
+  margin-bottom:10px;display:flex;gap:14px;}
+.rule-num{font-family:var(--ff-mono);font-size:13px;font-weight:800;color:var(--gold);min-width:26px;}
+.rule-title{font-size:14px;font-weight:700;color:var(--text);margin-bottom:4px;}
+.rule-desc{font-size:12.5px;color:var(--text-mute);line-height:1.55;}
+.source-notes{margin-top:18px;font-size:11.5px;color:var(--text-faint);line-height:1.6;}
+
+/* ---------------- METHODOLOGY TAB ---------------- */
+.method-p{font-size:13.5px;color:var(--text);line-height:1.65;margin-bottom:14px;}
+.method-p2{font-size:13px;color:var(--text-mute);line-height:1.65;margin-bottom:20px;}
+.factor-def-list{background:var(--bg-panel);border:1px solid var(--line);border-radius:14px;padding:4px;margin-bottom:20px;}
+.factor-def-row{display:grid;grid-template-columns:1fr auto;gap:8px;padding:10px 14px;border-bottom:1px solid var(--line-soft);}
+.factor-def-row:last-child{border-bottom:none;}
+.factor-def-name{display:flex;align-items:center;gap:8px;}
+.factor-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.factor-def-formula{font-size:11px;color:var(--text-faint);font-family:var(--ff-mono);margin-top:4px;margin-left:16px;}
+.factor-def-weight{font-size:13px;color:var(--text-mute);font-family:var(--ff-mono);align-self:center;}
+.code-block{
+  background:var(--bg-deep);border:1px solid var(--line);border-radius:12px;padding:16px;
+  font-family:var(--ff-mono);font-size:12px;color:var(--green);line-height:1.7;margin-bottom:16px;
+  overflow-x:auto;white-space:pre;
+}
+.method-foot{font-size:12px;color:var(--text-faint);line-height:1.6;}
+
+/* ---------------- FOOTER ---------------- */
+.ftr{border-top:1px solid var(--line);padding:18px;text-align:center;}
+.ftr-note{font-size:11px;color:var(--text-faint);max-width:560px;margin:0 auto;line-height:1.6;}
+.ftr-sync{font-size:10.5px;color:var(--text-faint);margin-top:8px;font-family:var(--ff-mono);}
+
+/* ---------------- TOAST ---------------- */
+.toast-host{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);z-index:100;display:flex;flex-direction:column;gap:8px;align-items:center;}
+.toast{
+  background:var(--bg-panel2);border:1px solid var(--line);border-radius:10px;padding:10px 16px;
+  font-size:12.5px;color:var(--text);box-shadow:0 8px 24px rgba(0,0,0,.4);
+  animation:toastIn .25s ease both;
+}
+@keyframes toastIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+
+/* ============================================================================
+   AI MATCH PREDICTOR — signature element: an orchestrated "thinking" sequence
+   that visualizes how the algorithm scores a single fixture end-to-end.
+   ============================================================================ */
+.predictor-intro{font-size:13px;color:var(--text-mute);line-height:1.6;margin-bottom:18px;max-width:640px;}
+
+.matchup-picker{
+  display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:14px;
+  background:var(--bg-panel);border:1px solid var(--line);border-radius:16px;padding:18px;margin-bottom:16px;
+}
+.picker-side{display:flex;flex-direction:column;gap:8px;align-items:center;text-align:center;}
+.picker-flag{font-size:46px;line-height:1;transition:transform .2s;}
+.picker-select{
+  width:100%;max-width:220px;background:var(--bg-panel2);border:1px solid var(--line);border-radius:10px;
+  padding:9px 10px;color:var(--text);font-size:13px;text-align:center;outline:none;
+}
+.picker-vs{
+  font-family:var(--ff-mono);font-size:13px;color:var(--text-faint);font-weight:700;
+  display:flex;flex-direction:column;align-items:center;gap:10px;
+}
+.vs-badge{
+  width:38px;height:38px;border-radius:50%;border:1px solid var(--line);background:var(--bg-deep);
+  display:flex;align-items:center;justify-content:center;font-size:12px;color:var(--text);
+}
+.predict-btn{
+  background:linear-gradient(135deg,var(--gold),#8a6d1a);border:none;border-radius:10px;
+  padding:10px 18px;color:#1a1408;font-weight:800;font-size:13px;font-family:var(--ff-mono);
+  display:flex;align-items:center;gap:8px;white-space:nowrap;transition:transform .15s,box-shadow .15s;
+  box-shadow:0 4px 14px rgba(212,167,44,.25);
+}
+.predict-btn:hover{transform:translateY(-1px);box-shadow:0 6px 18px rgba(212,167,44,.35);}
+.predict-btn:disabled{opacity:.5;cursor:not-allowed;transform:none;}
+.quick-fixtures{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:22px;}
+.quick-fixture-btn{
+  background:var(--bg-panel2);border:1px solid var(--line);border-radius:20px;padding:6px 12px;
+  font-size:11.5px;color:var(--gold);display:flex;align-items:center;gap:6px;transition:.15s;
+}
+.quick-fixture-btn:hover{border-color:var(--gold);color:var(--text);}
+
+/* ---- The "AI control room" stage ---- */
+.ai-stage{
+  background:var(--bg-deep);border:1px solid var(--line);border-radius:18px;padding:20px;
+  position:relative;overflow:hidden;min-height:120px;
+}
+.ai-stage::before{
+  content:"";position:absolute;inset:0;
+  background-image:
+    linear-gradient(rgba(77,143,214,.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(77,143,214,.04) 1px, transparent 1px);
+  background-size:24px 24px;pointer-events:none;opacity:0;
+  transition:opacity .6s ease;
+}
+.ai-stage.scanning::before{opacity:1;}
+.ai-stage-empty{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;
+  padding:30px 0;color:var(--text-faint);text-align:center;
+}
+.ai-stage-empty .ic{font-size:28px;opacity:.5;}
+
+/* step list */
+.ai-steps{display:flex;flex-direction:column;gap:0;}
+.ai-step{
+  display:grid;grid-template-columns:32px 1fr;gap:14px;padding:14px 4px;
+  border-bottom:1px solid var(--line-soft);opacity:0;transform:translateY(10px);
+}
+.ai-step:last-child{border-bottom:none;}
+.ai-step.revealed{animation:stepReveal .5s cubic-bezier(.2,.8,.2,1) forwards;}
+@keyframes stepReveal{to{opacity:1;transform:translateY(0);}}
+.step-marker{
+  width:32px;height:32px;border-radius:50%;border:1.5px solid var(--line);background:var(--bg-panel);
+  display:flex;align-items:center;justify-content:center;font-size:13px;color:var(--text-faint);
+  font-family:var(--ff-mono);flex-shrink:0;transition:border-color .3s,color .3s,background .3s;
+}
+.step-marker.active{
+  border-color:var(--blue);color:var(--blue);background:var(--blue-soft);
+  animation:markerPulse 1.2s ease-in-out infinite;
+}
+.step-marker.done{border-color:var(--green);color:var(--green);background:var(--green-soft);}
+@keyframes markerPulse{0%,100%{box-shadow:0 0 0 0 rgba(77,143,214,.4);}50%{box-shadow:0 0 0 5px rgba(77,143,214,0);}}
+.step-title{font-size:13.5px;font-weight:700;color:var(--text);margin-bottom:8px;display:flex;align-items:center;gap:8px;}
+.step-spinner{
+  width:11px;height:11px;border-radius:50%;border:2px solid var(--line);border-top-color:var(--blue);
+  animation:spin .7s linear infinite;display:inline-block;
+}
+@keyframes spin{to{transform:rotate(360deg);}}
+.step-body{font-size:12.5px;color:var(--text-mute);line-height:1.6;}
+
+/* count-up numeric readouts inside steps */
+.readout-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px;}
+.readout-card{background:var(--bg-panel);border:1px solid var(--line-soft);border-radius:10px;padding:10px 12px;}
+.readout-team{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text);font-weight:600;margin-bottom:6px;}
+.readout-num{font-family:var(--ff-mono);font-size:20px;font-weight:800;color:var(--text);}
+.readout-num.gold{color:var(--gold);}
+
+/* factor bars during step 2 */
+.factor-anim-row{display:grid;grid-template-columns:90px 1fr 36px;gap:8px;align-items:center;margin-bottom:6px;}
+.factor-anim-name{font-size:11px;color:var(--text-mute);font-family:var(--ff-mono);}
+.factor-anim-track{height:6px;background:var(--line-soft);border-radius:3px;overflow:hidden;}
+.factor-anim-fill{height:100%;border-radius:3px;width:0%;transition:width .7s cubic-bezier(.2,.8,.2,1);}
+.factor-anim-val{font-size:11px;color:var(--text);font-family:var(--ff-mono);text-align:right;}
+.dual-factor-block{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:8px;}
+.dual-factor-col-title{display:flex;align-items:center;gap:6px;font-size:11.5px;color:var(--text);font-weight:700;margin-bottom:8px;}
+
+/* formula build-up (step 3) */
+.formula-line{
+  font-family:var(--ff-mono);font-size:12px;color:var(--text-faint);padding:4px 0;
+  display:flex;justify-content:space-between;gap:10px;opacity:.35;transition:opacity .4s,color .4s;
+}
+.formula-line .term-val{flex-shrink:0;}
+.formula-line.lit{opacity:1;color:var(--text);}
+.formula-line .term-val{color:var(--text-mute);}
+.formula-line.lit .term-val{color:var(--gold);}
+.formula-total{
+  display:flex;justify-content:space-between;align-items:center;margin-top:8px;padding-top:10px;
+  border-top:1px solid var(--line-soft);font-family:var(--ff-mono);
+}
+.formula-total-lbl{font-size:12.5px;color:var(--text);font-weight:700;}
+.formula-total-val{font-size:20px;font-weight:800;}
+
+/* poisson histogram (step 4) */
+.poisson-wrap{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:10px;}
+.poisson-col-title{font-size:11.5px;color:var(--text);font-weight:700;margin-bottom:8px;display:flex;align-items:center;gap:6px;}
+.poisson-bars{display:flex;align-items:flex-end;gap:4px;height:64px;}
+.poisson-bar{flex:1;border-radius:3px 3px 0 0;min-height:2px;transition:height .6s cubic-bezier(.2,.8,.2,1);}
+.poisson-labels{display:flex;gap:4px;margin-top:4px;}
+.poisson-labels span{flex:1;text-align:center;font-size:9px;color:var(--text-faint);font-family:var(--ff-mono);}
+.lambda-readout{font-size:11px;color:var(--text-mute);margin-top:6px;font-family:var(--ff-mono);}
+
+/* simulation run (step 5) */
+.sim-progress-wrap{margin-top:8px;}
+.sim-progress-track{height:8px;background:var(--line-soft);border-radius:4px;overflow:hidden;margin-bottom:6px;}
+.sim-progress-fill{
+  height:100%;border-radius:4px;width:0%;
+  background:linear-gradient(90deg,var(--blue),var(--green));
+  transition:width .15s linear;
+}
+.sim-progress-text{font-size:11px;color:var(--text-faint);font-family:var(--ff-mono);display:flex;justify-content:space-between;}
+.outcome-bars{display:flex;height:34px;border-radius:8px;overflow:hidden;margin-top:12px;border:1px solid var(--line-soft);}
+.outcome-seg{display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;font-family:var(--ff-mono);
+  color:#fff;width:0%;transition:width .8s cubic-bezier(.2,.8,.2,1);white-space:nowrap;overflow:hidden;}
+.outcome-legend{display:flex;justify-content:space-between;margin-top:8px;font-size:11px;color:var(--text-mute);}
+
+/* final verdict card */
+.verdict-card{
+  margin-top:18px;border-radius:16px;padding:20px;position:relative;overflow:hidden;
+  background:linear-gradient(135deg,var(--gold-soft) 0%,var(--bg-panel) 75%);
+  border:1px solid rgba(212,167,44,.3);opacity:0;transform:scale(.97);
+  transition:opacity .5s ease,transform .5s cubic-bezier(.2,.8,.2,1);
+}
+.verdict-card.show{opacity:1;transform:scale(1);}
+.verdict-eyebrow{font-size:11px;color:var(--gold);letter-spacing:.1em;font-family:var(--ff-mono);margin-bottom:10px;
+  display:flex;align-items:center;gap:8px;}
+.verdict-main{display:flex;align-items:center;gap:16px;flex-wrap:wrap;}
+.verdict-flags{display:flex;align-items:center;gap:10px;font-size:34px;}
+.verdict-score{
+  font-family:var(--ff-mono);font-size:26px;font-weight:800;color:var(--text);
+  background:var(--bg-deep);border:1px solid var(--line);border-radius:10px;padding:8px 16px;
+}
+.verdict-detail{flex:1;min-width:180px;}
+.verdict-winner{font-size:18px;font-weight:800;color:var(--text);font-family:var(--ff-display);}
+.verdict-conf{font-size:12px;color:var(--text-mute);margin-top:4px;}
+.verdict-conf b{color:var(--gold);font-family:var(--ff-mono);}
+
+/* AI "thinking" typewriter line */
+.ai-thinking-line{
+  display:flex;align-items:center;gap:8px;font-family:var(--ff-mono);font-size:11.5px;color:var(--blue);
+  margin-bottom:14px;min-height:16px;
+}
+.ai-thinking-cursor{display:inline-block;width:6px;height:13px;background:var(--blue);animation:blink 1s step-end infinite;}
+@keyframes blink{50%{opacity:0;}}
+
+.history-strip{display:flex;gap:8px;overflow-x:auto;margin-top:18px;padding-bottom:4px;}
+.history-chip{
+  flex-shrink:0;background:var(--bg-panel);border:1px solid var(--line);border-radius:10px;padding:8px 12px;
+  font-size:11px;color:var(--text-mute);display:flex;align-items:center;gap:6px;font-family:var(--ff-mono);
+}
+/* ============================================================================
+   MOBILE RESPONSIVE OVERRIDES
+   ============================================================================
+   Additive only -- no existing rule above is modified. These overrides kick
+   in at narrower breakpoints to fix real overflow/cramping issues found via
+   device-width testing (320px through 480px), while leaving tablet/desktop
+   layout completely untouched.
+   ============================================================================ */
+@media (max-width: 600px){
+  /* App shell: tighten outer padding so content has more usable width */
+  .hdr-inner{padding:12px 14px;gap:10px;}
+  .main{padding:16px 12px 48px;}
+  .brand-mark{width:34px;height:34px;font-size:16px;}
+  .brand-name{font-size:15px;}
+  .brand-sub{font-size:10px;}
+  .lang-btn{padding:6px 10px;font-size:11.5px;}
+  .live-pill{font-size:10px;}
+  .tabs{padding:0 12px;}
+  .tab{padding:9px 9px;font-size:12px;}
+
+  /* Stat strip: force a steady 2x2 grid instead of collapsing to 1 column,
+     so the four tournament stats don't eat the whole first screen */
+  .stat-strip{grid-template-columns:repeat(2, 1fr);}
+  .stat-cell{padding:13px 14px;}
+  .stat-val{font-size:24px;}
+
+  /* Win-probability board rows: let the host badge sit on its own line
+     cleanly instead of crowding the team name, and shrink the percentage
+     column slightly so long country names don't force extra wrapping */
+  .board-row{grid-template-columns:24px 26px 1fr auto;gap:9px;padding:9px 2px;}
+  .row-name{font-size:13.5px;display:flex;flex-wrap:wrap;align-items:center;gap:6px;row-gap:3px;}
+  .host-badge{margin-left:0;}
+  .row-pct{font-size:15px;min-width:54px;}
+
+  /* Team cards / list */
+  .teams-grid{grid-template-columns:1fr;}
+  .team-card{padding:11px 12px;}
+
+  /* Team detail header: let the percentage block wrap onto its own row
+     under the name instead of floating awkwardly to the far right */
+  .detail-head{gap:12px;}
+  .detail-name{font-size:20px;}
+  .detail-pct-wrap{margin-left:0;text-align:left;flex-basis:100%;}
+  .detail-pct{font-size:26px;}
+
+  /* AI Match Predictor: the picker is the one place a 3-column grid
+     (flag+select / VS+button / flag+select) cannot fit at narrow widths
+     because "Jalankan Prediksi / Run Prediction" needs real room. Stack it
+     vertically -- team A, then the VS+button, then team B. */
+  .matchup-picker{grid-template-columns:1fr;gap:16px;padding:16px;}
+  .picker-vs{flex-direction:row;justify-content:center;gap:12px;order:2;}
+  .picker-side:first-of-type{order:1;}
+  .picker-side:last-of-type{order:3;}
+  .picker-select{max-width:100%;}
+  .predict-btn{font-size:12.5px;padding:10px 16px;}
+  .quick-fixture-btn{font-size:11px;padding:6px 10px;}
+
+  /* AI step readouts / factor bars: narrower label columns so the numeric
+     value never gets pushed past the edge of the card */
+  .readout-grid{grid-template-columns:1fr;gap:8px;}
+  .dual-factor-block{grid-template-columns:1fr;gap:14px;}
+  .factor-anim-row{grid-template-columns:72px 1fr 32px;gap:6px;}
+  .poisson-wrap{grid-template-columns:1fr;gap:14px;}
+  .verdict-main{gap:12px;}
+  .verdict-flags{font-size:28px;}
+  .verdict-score{font-size:20px;padding:7px 12px;}
+
+  /* Group standings table: keep the existing internal horizontal scroll,
+     but shrink the minimum width so two-thirds of the table (through GD)
+     is visible without scrolling, and add a visible affordance so users
+     know more columns are reachable by swiping */
+  .group-table-inner{min-width:0;}
+  .gt-head,.gt-row{grid-template-columns:20px 1fr 26px 24px 24px 24px 32px 38px;gap:2px;}
+  .gt-head{padding:9px 8px;font-size:9.5px;}
+  .gt-row{padding:10px 8px;}
+  .gt-team{gap:6px;}
+  .gt-team span.nm{font-size:12.5px;}
+  .group-table-wrap::after{
+    content:"⇠ swipe for more";
+    display:block;text-align:center;font-size:10px;color:var(--text-faint);
+    font-family:var(--ff-mono);padding:6px 0 2px;
+  }
+
+  /* Methodology code block: shrink font and tighten padding so the formula
+     lines fit far more readably before the user needs to scroll horizontally,
+     and add the same swipe affordance as the group table */
+  .code-block{font-size:10.5px;padding:12px;}
+  .factor-def-formula{font-size:10px;max-width:100%;white-space:normal;}
+  .factor-def-row{grid-template-columns:1fr auto;gap:6px;padding:9px 10px;}
+
+  /* Highlights / champion card: let big flag emoji shrink slightly so the
+     champion card never feels cramped against the percentage block */
+  .champion-card{padding:18px 16px;gap:14px;}
+  .champion-flag{font-size:44px;}
+  .champion-pct{font-size:30px;}
+  .champion-pct-wrap{margin-left:0;}
+
+  /* Rules / generic cards: slightly tighter padding throughout on very
+     narrow phones so text has more breathing room before wrapping */
+  .rule-card,.info-card,.card{padding:12px 13px;}
+}
+
+@media (max-width: 360px){
+  /* Extra-narrow phones (iPhone SE / older Android): one more notch down */
+  .stat-val{font-size:22px;}
+  .row-pct{font-size:14px;min-width:48px;}
+  .detail-name{font-size:18px;}
+  .gt-head,.gt-row{grid-template-columns:18px 1fr 24px 22px 22px 22px 30px 34px;}
+}
+
+</style>
+</head>
+<body>
+
+<div id="app" class="boot-in">
+  <!-- HEADER -->
+  <header class="hdr boot-in" id="hdr">
+    <div class="hdr-inner">
+      <div class="brand">
+        <div class="brand-mark">🏆</div>
+        <div class="brand-text">
+          <div class="brand-name" data-i18n="appName">Peluang Juara</div>
+          <div class="brand-sub" data-i18n="appSub">Piala Dunia FIFA 2026™</div>
+        </div>
+      </div>
+      <div class="hdr-right">
+        <div class="live-pill" id="livePill">
+          <span class="live-dot" id="liveDot"></span>
+          <span data-i18n="live">LANGSUNG</span>
+        </div>
+        <button class="lang-btn" id="langBtn">EN</button>
+      </div>
+    </div>
+    <nav class="tabs" id="tabs">
+      <button class="tab active" data-tab="dashboard"><span class="tab-ic">📡</span><span data-i18n="tabDashboard">Dasbor</span></button>
+      <button class="tab" data-tab="predictor"><span class="tab-ic">🤖</span><span data-i18n="tabPredictor">AI Prediktor</span></button>
+      <button class="tab" data-tab="overall"><span class="tab-ic">🏆</span><span data-i18n="tabOverall">Klasemen Akhir</span></button>
+      <button class="tab" data-tab="teams"><span class="tab-ic">🌎</span><span data-i18n="tabTeams">Negara</span></button>
+      <button class="tab" data-tab="groups"><span class="tab-ic">📋</span><span data-i18n="tabGroups">Klasemen Grup</span></button>
+      <button class="tab" data-tab="highlights"><span class="tab-ic">▶️</span><span data-i18n="tabHighlights">Highlight</span></button>
+      <button class="tab" data-tab="rules"><span class="tab-ic">📜</span><span data-i18n="tabRules">Peraturan</span></button>
+      <button class="tab" data-tab="method"><span class="tab-ic">🧮</span><span data-i18n="tabMethod">Metodologi</span></button>
+    </nav>
+  </header>
+
+  <!-- MAIN -->
+  <main class="main" id="main">
+    <div class="panel active" id="panel-dashboard"></div>
+    <div class="panel" id="panel-predictor"></div>
+    <div class="panel" id="panel-overall"></div>
+    <div class="panel" id="panel-teams"></div>
+    <div class="panel" id="panel-groups"></div>
+    <div class="panel" id="panel-highlights"></div>
+    <div class="panel" id="panel-rules"></div>
+    <div class="panel" id="panel-method"></div>
+  </main>
+
+  <footer class="ftr">
+    <div class="ftr-note" data-i18n="footerNote">Proyeksi statistik dari simulasi, bukan jaminan hasil.</div>
+    <div class="ftr-sync" id="ftrSync"></div>
+  </footer>
+</div>
+
+<!-- toast container for ephemeral notices -->
+<div id="toastHost" class="toast-host"></div>
+
+<script>
+/* ============================================================================
+   FIFA WORLD CUP 2026 -- TITLE PROBABILITY ENGINE (standalone HTML build)
+   ============================================================================ */
+"use strict";
+
+const TEAMS_RAW = [{"code":"ARG","name":"Argentina","name_id":"Argentina","group":"J","fifaRank":1,"fifaPoints":1894,"confed":"CONMEBOL","host":false,"pop":45.8,"gdpCap":13700,"lat":-38.4,"lon":-63.6,"titles":3,"capital":"Buenos Aires"},{"code":"ESP","name":"Spain","name_id":"Spanyol","group":"H","fifaRank":2,"fifaPoints":1876,"confed":"UEFA","host":false,"pop":47.6,"gdpCap":32500,"lat":40.4,"lon":-3.7,"titles":1,"capital":"Madrid"},{"code":"FRA","name":"France","name_id":"Prancis","group":"I","fifaRank":3,"fifaPoints":1865,"confed":"UEFA","host":false,"pop":68.2,"gdpCap":44400,"lat":46.6,"lon":2.2,"titles":2,"capital":"Paris"},{"code":"ENG","name":"England","name_id":"Inggris","group":"L","fifaRank":4,"fifaPoints":1838,"confed":"UEFA","host":false,"pop":56.5,"gdpCap":46100,"lat":52.4,"lon":-1.5,"titles":1,"capital":"London"},{"code":"POR","name":"Portugal","name_id":"Portugal","group":"K","fifaRank":5,"fifaPoints":1815,"confed":"UEFA","host":false,"pop":10.3,"gdpCap":28400,"lat":39.4,"lon":-8.2,"titles":0,"capital":"Lisbon"},{"code":"BRA","name":"Brazil","name_id":"Brasil","group":"C","fifaRank":6,"fifaPoints":1798,"confed":"CONMEBOL","host":false,"pop":216.4,"gdpCap":10400,"lat":-14.2,"lon":-51.9,"titles":5,"capital":"Brasília"},{"code":"MAR","name":"Morocco","name_id":"Maroko","group":"C","fifaRank":7,"fifaPoints":1762,"confed":"CAF","host":false,"pop":37.8,"gdpCap":3800,"lat":31.8,"lon":-7.1,"titles":0,"capital":"Rabat"},{"code":"NED","name":"Netherlands","name_id":"Belanda","group":"F","fifaRank":8,"fifaPoints":1751,"confed":"UEFA","host":false,"pop":17.9,"gdpCap":58000,"lat":52.1,"lon":5.3,"titles":0,"capital":"Amsterdam"},{"code":"BEL","name":"Belgium","name_id":"Belgia","group":"G","fifaRank":9,"fifaPoints":1738,"confed":"UEFA","host":false,"pop":11.7,"gdpCap":53400,"lat":50.5,"lon":4.5,"titles":0,"capital":"Brussels"},{"code":"GER","name":"Germany","name_id":"Jerman","group":"E","fifaRank":10,"fifaPoints":1722,"confed":"UEFA","host":false,"pop":83.8,"gdpCap":51200,"lat":51.2,"lon":10.4,"titles":4,"capital":"Berlin"},{"code":"CRO","name":"Croatia","name_id":"Kroasia","group":"L","fifaRank":11,"fifaPoints":1701,"confed":"UEFA","host":false,"pop":3.9,"gdpCap":18900,"lat":45.1,"lon":15.2,"titles":0,"capital":"Zagreb"},{"code":"COL","name":"Colombia","name_id":"Kolombia","group":"K","fifaRank":13,"fifaPoints":1680,"confed":"CONMEBOL","host":false,"pop":52.1,"gdpCap":6600,"lat":4.6,"lon":-74.3,"titles":0,"capital":"Bogotá"},{"code":"MEX","name":"Mexico","name_id":"Meksiko","group":"A","fifaRank":14,"fifaPoints":1665,"confed":"CONCACAF","host":true,"pop":128.9,"gdpCap":11500,"lat":23.6,"lon":-102.5,"titles":0,"capital":"Mexico City"},{"code":"SEN","name":"Senegal","name_id":"Senegal","group":"I","fifaRank":15,"fifaPoints":1652,"confed":"CAF","host":false,"pop":17.7,"gdpCap":1700,"lat":14.5,"lon":-14.5,"titles":0,"capital":"Dakar"},{"code":"URU","name":"Uruguay","name_id":"Uruguay","group":"H","fifaRank":16,"fifaPoints":1641,"confed":"CONMEBOL","host":false,"pop":3.5,"gdpCap":17800,"lat":-32.5,"lon":-55.8,"titles":2,"capital":"Montevideo"},{"code":"USA","name":"United States","name_id":"Amerika Serikat","group":"D","fifaRank":17,"fifaPoints":1628,"confed":"CONCACAF","host":true,"pop":341.8,"gdpCap":85400,"lat":39.8,"lon":-98.6,"titles":0,"capital":"Washington D.C."},{"code":"JPN","name":"Japan","name_id":"Jepang","group":"F","fifaRank":18,"fifaPoints":1615,"confed":"AFC","host":false,"pop":123.3,"gdpCap":33800,"lat":36.2,"lon":138.3,"titles":0,"capital":"Tokyo"},{"code":"SUI","name":"Switzerland","name_id":"Swiss","group":"B","fifaRank":19,"fifaPoints":1602,"confed":"UEFA","host":false,"pop":8.9,"gdpCap":99300,"lat":46.8,"lon":8.2,"titles":0,"capital":"Bern"},{"code":"IRN","name":"Iran","name_id":"Iran","group":"G","fifaRank":20,"fifaPoints":1589,"confed":"AFC","host":false,"pop":89.2,"gdpCap":4800,"lat":32.4,"lon":53.7,"titles":0,"capital":"Tehran"},{"code":"TUR","name":"Turkiye","name_id":"Turki","group":"D","fifaRank":22,"fifaPoints":1568,"confed":"UEFA","host":false,"pop":85.8,"gdpCap":13100,"lat":38.9,"lon":35.2,"titles":0,"capital":"Ankara"},{"code":"ECU","name":"Ecuador","name_id":"Ekuador","group":"E","fifaRank":23,"fifaPoints":1555,"confed":"CONMEBOL","host":false,"pop":18.0,"gdpCap":6200,"lat":-1.8,"lon":-78.2,"titles":0,"capital":"Quito"},{"code":"AUT","name":"Austria","name_id":"Austria","group":"J","fifaRank":24,"fifaPoints":1543,"confed":"UEFA","host":false,"pop":9.1,"gdpCap":53600,"lat":47.5,"lon":14.6,"titles":0,"capital":"Vienna"},{"code":"KOR","name":"South Korea","name_id":"Korea Selatan","group":"A","fifaRank":25,"fifaPoints":1531,"confed":"AFC","host":false,"pop":51.7,"gdpCap":34900,"lat":35.9,"lon":127.8,"titles":0,"capital":"Seoul"},{"code":"AUS","name":"Australia","name_id":"Australia","group":"D","fifaRank":27,"fifaPoints":1508,"confed":"AFC","host":false,"pop":26.6,"gdpCap":64800,"lat":-25.3,"lon":133.8,"titles":0,"capital":"Canberra"},{"code":"ALG","name":"Algeria","name_id":"Aljazair","group":"J","fifaRank":28,"fifaPoints":1497,"confed":"CAF","host":false,"pop":45.6,"gdpCap":4300,"lat":28.0,"lon":1.7,"titles":0,"capital":"Algiers"},{"code":"EGY","name":"Egypt","name_id":"Mesir","group":"G","fifaRank":29,"fifaPoints":1486,"confed":"CAF","host":false,"pop":112.7,"gdpCap":3900,"lat":26.8,"lon":30.8,"titles":0,"capital":"Cairo"},{"code":"CAN","name":"Canada","name_id":"Kanada","group":"B","fifaRank":30,"fifaPoints":1475,"confed":"CONCACAF","host":true,"pop":40.1,"gdpCap":53700,"lat":56.1,"lon":-106.3,"titles":0,"capital":"Ottawa"},{"code":"NOR","name":"Norway","name_id":"Norwegia","group":"I","fifaRank":31,"fifaPoints":1463,"confed":"UEFA","host":false,"pop":5.5,"gdpCap":89200,"lat":60.5,"lon":8.5,"titles":0,"capital":"Oslo"},{"code":"CIV","name":"Cote d'Ivoire","name_id":"Pantai Gading","group":"E","fifaRank":33,"fifaPoints":1441,"confed":"CAF","host":false,"pop":29.4,"gdpCap":2700,"lat":7.5,"lon":-5.5,"titles":0,"capital":"Yamoussoukro"},{"code":"PAN","name":"Panama","name_id":"Panama","group":"L","fifaRank":34,"fifaPoints":1428,"confed":"CONCACAF","host":false,"pop":4.4,"gdpCap":17200,"lat":8.5,"lon":-80.8,"titles":0,"capital":"Panama City"},{"code":"SWE","name":"Sweden","name_id":"Swedia","group":"F","fifaRank":38,"fifaPoints":1392,"confed":"UEFA","host":false,"pop":10.6,"gdpCap":61600,"lat":60.1,"lon":18.6,"titles":0,"capital":"Stockholm"},{"code":"CZE","name":"Czechia","name_id":"Cekia","group":"A","fifaRank":40,"fifaPoints":1371,"confed":"UEFA","host":false,"pop":10.5,"gdpCap":31200,"lat":49.8,"lon":15.5,"titles":0,"capital":"Prague"},{"code":"PAR","name":"Paraguay","name_id":"Paraguay","group":"D","fifaRank":41,"fifaPoints":1362,"confed":"CONMEBOL","host":false,"pop":6.9,"gdpCap":6100,"lat":-23.4,"lon":-58.4,"titles":0,"capital":"Asunción"},{"code":"SCO","name":"Scotland","name_id":"Skotlandia","group":"C","fifaRank":42,"fifaPoints":1351,"confed":"UEFA","host":false,"pop":5.5,"gdpCap":46100,"lat":56.5,"lon":-4.2,"titles":0,"capital":"Edinburgh"},{"code":"TUN","name":"Tunisia","name_id":"Tunisia","group":"F","fifaRank":45,"fifaPoints":1318,"confed":"CAF","host":false,"pop":12.3,"gdpCap":3800,"lat":33.9,"lon":9.5,"titles":0,"capital":"Tunis"},{"code":"COD","name":"DR Congo","name_id":"Kongo DR","group":"K","fifaRank":46,"fifaPoints":1305,"confed":"CAF","host":false,"pop":102.3,"gdpCap":650,"lat":-4.0,"lon":21.8,"titles":0,"capital":"Kinshasa"},{"code":"UZB","name":"Uzbekistan","name_id":"Uzbekistan","group":"K","fifaRank":50,"fifaPoints":1276,"confed":"AFC","host":false,"pop":36.4,"gdpCap":2500,"lat":41.4,"lon":64.6,"titles":0,"capital":"Tashkent"},{"code":"QAT","name":"Qatar","name_id":"Qatar","group":"B","fifaRank":56,"fifaPoints":1224,"confed":"AFC","host":false,"pop":3.0,"gdpCap":83500,"lat":25.3,"lon":51.2,"titles":0,"capital":"Doha"},{"code":"IRQ","name":"Iraq","name_id":"Irak","group":"I","fifaRank":57,"fifaPoints":1218,"confed":"AFC","host":false,"pop":44.5,"gdpCap":5900,"lat":33.2,"lon":43.7,"titles":0,"capital":"Baghdad"},{"code":"RSA","name":"South Africa","name_id":"Afrika Selatan","group":"A","fifaRank":60,"fifaPoints":1195,"confed":"CAF","host":false,"pop":60.4,"gdpCap":6700,"lat":-30.6,"lon":22.9,"titles":0,"capital":"Pretoria"},{"code":"KSA","name":"Saudi Arabia","name_id":"Arab Saudi","group":"H","fifaRank":61,"fifaPoints":1188,"confed":"AFC","host":false,"pop":36.4,"gdpCap":27000,"lat":23.9,"lon":45.1,"titles":0,"capital":"Riyadh"},{"code":"JOR","name":"Jordan","name_id":"Yordania","group":"J","fifaRank":63,"fifaPoints":1172,"confed":"AFC","host":false,"pop":11.3,"gdpCap":4500,"lat":30.6,"lon":36.2,"titles":0,"capital":"Amman"},{"code":"BIH","name":"Bosnia and Herzegovina","name_id":"Bosnia dan Herzegovina","group":"B","fifaRank":64,"fifaPoints":1165,"confed":"UEFA","host":false,"pop":3.2,"gdpCap":8400,"lat":43.9,"lon":17.7,"titles":0,"capital":"Sarajevo"},{"code":"CPV","name":"Cape Verde","name_id":"Tanjung Verde","group":"H","fifaRank":67,"fifaPoints":1141,"confed":"CAF","host":false,"pop":0.6,"gdpCap":4200,"lat":16.0,"lon":-24.0,"titles":0,"capital":"Praia"},{"code":"GHA","name":"Ghana","name_id":"Ghana","group":"L","fifaRank":73,"fifaPoints":1098,"confed":"CAF","host":false,"pop":33.5,"gdpCap":2400,"lat":7.9,"lon":-1.0,"titles":0,"capital":"Accra"},{"code":"CUW","name":"Curacao","name_id":"Curaçao","group":"E","fifaRank":82,"fifaPoints":1029,"confed":"CONCACAF","host":false,"pop":0.2,"gdpCap":17600,"lat":12.2,"lon":-69.0,"titles":0,"capital":"Willemstad"},{"code":"HAI","name":"Haiti","name_id":"Haiti","group":"C","fifaRank":83,"fifaPoints":1021,"confed":"CONCACAF","host":false,"pop":11.6,"gdpCap":1700,"lat":18.9,"lon":-72.3,"titles":0,"capital":"Port-au-Prince"},{"code":"NZL","name":"New Zealand","name_id":"Selandia Baru","group":"G","fifaRank":85,"fifaPoints":1008,"confed":"OFC","host":false,"pop":5.2,"gdpCap":48800,"lat":-40.9,"lon":174.9,"titles":0,"capital":"Wellington"}]
+;
+const FALLBACK_STANDINGS = {"A":[{"code":"MEX","p":2,"w":2,"d":0,"l":0,"gf":3,"ga":0,"pts":6},{"code":"KOR","p":2,"w":1,"d":0,"l":1,"gf":2,"ga":2,"pts":3},{"code":"CZE","p":2,"w":0,"d":1,"l":1,"gf":1,"ga":2,"pts":1},{"code":"RSA","p":2,"w":0,"d":1,"l":1,"gf":1,"ga":3,"pts":1}],"B":[{"code":"CAN","p":2,"w":1,"d":1,"l":0,"gf":7,"ga":1,"pts":4},{"code":"SUI","p":2,"w":1,"d":1,"l":0,"gf":4,"ga":1,"pts":4},{"code":"BIH","p":2,"w":0,"d":1,"l":1,"gf":1,"ga":4,"pts":1},{"code":"QAT","p":2,"w":0,"d":1,"l":1,"gf":0,"ga":6,"pts":1}],"C":[{"code":"BRA","p":2,"w":1,"d":1,"l":0,"gf":4,"ga":1,"pts":4},{"code":"MAR","p":2,"w":1,"d":1,"l":0,"gf":2,"ga":1,"pts":4},{"code":"SCO","p":2,"w":1,"d":0,"l":1,"gf":1,"ga":1,"pts":3},{"code":"HAI","p":2,"w":0,"d":0,"l":2,"gf":0,"ga":4,"pts":0}],"D":[{"code":"USA","p":2,"w":2,"d":0,"l":0,"gf":6,"ga":1,"pts":6},{"code":"AUS","p":2,"w":1,"d":0,"l":1,"gf":2,"ga":2,"pts":3},{"code":"PAR","p":2,"w":1,"d":0,"l":1,"gf":1,"ga":3,"pts":3},{"code":"TUR","p":2,"w":0,"d":0,"l":2,"gf":1,"ga":4,"pts":0}],"E":[{"code":"GER","p":2,"w":2,"d":0,"l":0,"gf":8,"ga":1,"pts":6},{"code":"CIV","p":2,"w":1,"d":0,"l":1,"gf":2,"ga":2,"pts":3},{"code":"ECU","p":2,"w":0,"d":1,"l":1,"gf":1,"ga":2,"pts":1},{"code":"CUW","p":2,"w":0,"d":1,"l":1,"gf":1,"ga":7,"pts":1}],"F":[{"code":"NED","p":2,"w":1,"d":1,"l":0,"gf":5,"ga":1,"pts":4},{"code":"JPN","p":2,"w":1,"d":1,"l":0,"gf":4,"ga":0,"pts":4},{"code":"SWE","p":2,"w":1,"d":0,"l":1,"gf":1,"ga":1,"pts":3},{"code":"TUN","p":2,"w":0,"d":0,"l":2,"gf":0,"ga":8,"pts":0}],"G":[{"code":"NZL","p":1,"w":0,"d":1,"l":0,"gf":0,"ga":0,"pts":1},{"code":"IRN","p":1,"w":0,"d":1,"l":0,"gf":0,"ga":0,"pts":1},{"code":"BEL","p":1,"w":0,"d":1,"l":0,"gf":0,"ga":0,"pts":1},{"code":"EGY","p":1,"w":0,"d":1,"l":0,"gf":0,"ga":0,"pts":1}],"H":[{"code":"URU","p":1,"w":0,"d":1,"l":0,"gf":0,"ga":0,"pts":1},{"code":"KSA","p":1,"w":0,"d":1,"l":0,"gf":0,"ga":0,"pts":1},{"code":"ESP","p":1,"w":0,"d":1,"l":0,"gf":0,"ga":0,"pts":1},{"code":"CPV","p":1,"w":0,"d":1,"l":0,"gf":0,"ga":0,"pts":1}],"I":[{"code":"NOR","p":2,"w":1,"d":1,"l":0,"gf":3,"ga":1,"pts":3},{"code":"FRA","p":2,"w":1,"d":1,"l":0,"gf":4,"ga":2,"pts":3},{"code":"SEN","p":2,"w":0,"d":1,"l":1,"gf":1,"ga":3,"pts":0},{"code":"IRQ","p":2,"w":0,"d":1,"l":1,"gf":1,"ga":4,"pts":0}],"J":[{"code":"ARG","p":1,"w":1,"d":0,"l":0,"gf":3,"ga":0,"pts":3},{"code":"AUT","p":1,"w":1,"d":0,"l":0,"gf":3,"ga":1,"pts":3},{"code":"JOR","p":1,"w":0,"d":0,"l":1,"gf":1,"ga":3,"pts":0},{"code":"ALG","p":1,"w":0,"d":0,"l":1,"gf":0,"ga":3,"pts":0}],"K":[{"code":"COL","p":1,"w":1,"d":0,"l":0,"gf":3,"ga":1,"pts":3},{"code":"COD","p":1,"w":0,"d":1,"l":0,"gf":1,"ga":1,"pts":1},{"code":"POR","p":1,"w":0,"d":1,"l":0,"gf":1,"ga":1,"pts":1},{"code":"UZB","p":1,"w":0,"d":0,"l":1,"gf":1,"ga":3,"pts":0}],"L":[{"code":"ENG","p":1,"w":1,"d":0,"l":0,"gf":4,"ga":2,"pts":3},{"code":"GHA","p":1,"w":1,"d":0,"l":0,"gf":1,"ga":0,"pts":3},{"code":"PAN","p":1,"w":0,"d":0,"l":1,"gf":0,"ga":1,"pts":0},{"code":"CRO","p":1,"w":0,"d":0,"l":1,"gf":2,"ga":4,"pts":0}]}
+;
+const LIVE_DATA_URL = "https://raw.githubusercontent.com/openfootball/worldcup.json/master/2026/worldcup.json";
+const GROUP_LETTERS = ["A","B","C","D","E","F","G","H","I","J","K","L"];
+// REVISED v2 (per algorithm critique): economy+demographics cut from 20% to 5% combined
+// (they were overshadowing genuine football strength -- e.g. wealthy-but-weak nations like
+// Qatar/Norway/Australia were getting an undeserved boost while small football powerhouses
+// like Uruguay/Morocco were undervalued). Freed-up weight moved to rank (now ELO-responsive,
+// not just ordinal) and luck (keeps upset variance healthy). History factor now uses time-decay
+// instead of a flat per-title bonus, so a 2022 title counts far more than a 1966 one.
+const FACTOR_WEIGHTS = { rank: 0.40, form: 0.27, econ: 0.025, demo: 0.025, hist: 0.08, luck: 0.20 };
+
+const FLAG_EMOJI = {
+  ARG:"\ud83c\udde6\ud83c\uddf7",ESP:"\ud83c\uddea\ud83c\uddf8",FRA:"\ud83c\uddeb\ud83c\uddf7",ENG:"\ud83c\udff4\udb40\udc67\udb40\udc62\udb40\udc65\udb40\udc6e\udb40\udc67\udb40\udc7f",POR:"\ud83c\uddf5\ud83c\uddf9",BRA:"\ud83c\udde7\ud83c\uddf7",MAR:"\ud83c\uddf2\ud83c\udde6",NED:"\ud83c\uddf3\ud83c\uddf1",BEL:"\ud83c\udde7\ud83c\uddea",GER:"\ud83c\udde9\ud83c\uddea",CRO:"\ud83c\udded\ud83c\uddf7",COL:"\ud83c\udde8\ud83c\uddf4",MEX:"\ud83c\uddf2\ud83c\uddfd",SEN:"\ud83c\uddf8\ud83c\uddf3",URU:"\ud83c\uddfa\ud83c\uddfe",USA:"\ud83c\uddfa\ud83c\uddf8",JPN:"\ud83c\uddef\ud83c\uddf5",SUI:"\ud83c\udde8\ud83c\udded",IRN:"\ud83c\uddee\ud83c\uddf7",TUR:"\ud83c\uddf9\ud83c\uddf7",ECU:"\ud83c\uddea\ud83c\udde8",AUT:"\ud83c\udde6\ud83c\uddf9",KOR:"\ud83c\uddf0\ud83c\uddf7",AUS:"\ud83c\udde6\ud83c\uddfa",ALG:"\ud83c\udde9\ud83c\uddff",EGY:"\ud83c\uddea\ud83c\uddec",CAN:"\ud83c\udde8\ud83c\udde6",NOR:"\ud83c\uddf3\ud83c\uddf4",CIV:"\ud83c\udde8\ud83c\uddee",PAN:"\ud83c\uddf5\ud83c\udde6",SWE:"\ud83c\uddf8\ud83c\uddea",CZE:"\ud83c\udde8\ud83c\uddff",PAR:"\ud83c\uddf5\ud83c\uddfe",SCO:"\ud83c\udff4\udb40\udc67\udb40\udc62\udb40\udc73\udb40\udc63\udb40\udc74\udb40\udc7f",TUN:"\ud83c\uddf9\ud83c\uddf3",COD:"\ud83c\udde8\ud83c\udde9",UZB:"\ud83c\uddfa\ud83c\uddff",QAT:"\ud83c\uddf6\ud83c\udde6",IRQ:"\ud83c\uddee\ud83c\uddf6",RSA:"\ud83c\uddff\ud83c\udde6",KSA:"\ud83c\uddf8\ud83c\udde6",JOR:"\ud83c\uddef\ud83c\uddf4",BIH:"\ud83c\udde7\ud83c\udde6",CPV:"\ud83c\udde8\ud83c\uddfb",GHA:"\ud83c\uddec\ud83c\udded",CUW:"\ud83c\udde8\ud83c\uddfc",HAI:"\ud83c\udded\ud83c\uddf9",NZL:"\ud83c\uddf3\ud83c\uddff"
+};
+
+/* ---------------------------- i18n STRINGS ---------------------------- */
+const STR = {
+  id: {
+    appName: "Peluang Juara", appSub: "Piala Dunia FIFA 2026™",
+    tabDashboard: "Dasbor", tabPredictor: "AI Prediktor", tabTeams: "Negara", tabGroups: "Klasemen Grup",
+    tabOverall: "Klasemen Akhir", tabHighlights: "Highlight", tabRules: "Peraturan", tabMethod: "Metodologi",
+    live: "LANGSUNG", lastSync: "Sinkron terakhir", syncing: "Menyinkronkan data live…",
+    syncOk: "Tersambung ke data live", syncFail: "Memakai data dasar — sinkron live gagal",
+    championProb: "Probabilitas Juara", simRuns: "simulasi Monte Carlo per pembaruan",
+    searchTeam: "Cari negara…", rankFifa: "Ranking FIFA", group: "Grup",
+    host: "Tuan Rumah", population: "Populasi", gdpCap: "PDB per Kapita",
+    titles: "Gelar Juara Dunia", capital: "Ibu Kota",
+    luckFactor: "Keberuntungan", formFactor: "Form Turnamen", econFactor: "Ekonomi",
+    demoFactor: "Demografi", histFactor: "Sejarah", rankFactor: "Ranking FIFA",
+    strengthScore: "Skor Kekuatan", winChance: "Peluang Juara",
+    map: "Lokasi Negara", factorBreakdown: "Rincian Faktor Algoritma", openInMaps: "Buka di Google Maps",
+    matchesPlayed: "Main", win: "M", draw: "S", loss: "K", goalDiff: "SG", points: "Poin", qualified: "Lolos",
+    overallTitle: "Klasemen Akhir & Prediksi Juara",
+    overallSub: "Diurutkan berdasarkan probabilitas algoritma untuk menjadi juara",
+    predictedChampion: "Prediksi Juara — Algoritma & AI",
+    aiAnalysis: "Analisis Kecerdasan Buatan",
+    highlightsTitle: "Highlight Pertandingan", highlightsSub: "Video resmi dari YouTube",
+    watchYoutube: "Tonton di YouTube", searchYoutube: "Cari highlight di YouTube",
+    methodTitle: "Metodologi Algoritma",
+    backToList: "Kembali",
+    footerNote: "Proyeksi statistik dari simulasi, bukan jaminan hasil. Sepak bola tetap indah karena ketidakpastiannya.",
+    team: "Negara",
+    noMatchesYet: "Belum ada pertandingan dimainkan di grup ini.",
+    allGroups: "Semua Grup",
+    statTitle: "Statistik Turnamen", teamsCount: "Negara Peserta", groupsCount: "Grup",
+    matchesTotal: "Total Pertandingan", daysLeft: "Hari ke Final",
+    finalDate: "Final 19 Juli 2026 — New York/New Jersey",
+    knockoutStart: "32 Besar dimulai 28 Juni 2026",
+    methodologyP1: "Algoritma menggabungkan enam faktor terukur menjadi satu Skor Kekuatan untuk tiap negara, lalu menjalankan simulasi Monte Carlo atas sisa turnamen — termasuk laga grup yang belum dimainkan dan seluruh babak gugur — ribuan kali untuk menghasilkan distribusi probabilitas juara.",
+    methodologyP2: "Setiap simulasi memodelkan skor pertandingan dengan distribusi Poisson, di mana ekspektasi gol (λ) tiap tim diturunkan dari selisih Skor Kekuatan kedua tim. Faktor keberuntungan diacak ulang pada tiap simulasi untuk merepresentasikan variabilitas alami sepak bola.",
+    weightLabel: "Bobot", overview: "Ringkasan",
+    methodInputs: "Input Faktor", methodFormula: "Formula Skor Kekuatan",
+    poissonNote: "Model gol Poisson — λ diturunkan dari selisih Skor Kekuatan kedua tim",
+    rulesIntro: "Edisi 2026 adalah Piala Dunia terbesar dalam sejarah: 48 negara, 12 grup, 104 pertandingan, di tiga negara tuan rumah.",
+    rule1t: "Fase Grup", rule1: "48 tim dibagi 12 grup (A–L), masing-masing 4 tim. Setiap tim bermain 3 laga round-robin di dalam grupnya.",
+    rule2t: "Kualifikasi 32 Besar", rule2: "Juara dan runner-up setiap grup (24 tim) otomatis lolos, ditambah 8 tim peringkat ketiga terbaik dari seluruh grup — total 32 tim ke babak gugur.",
+    rule3t: "Tiebreaker", rule3: "Urutan klasemen grup ditentukan oleh: (1) poin, (2) selisih gol, (3) gol dimasukkan, (4) hasil head-to-head, (5) fair play, (6) undian.",
+    rule4t: "Babak Gugur", rule4: "32 Besar → 16 Besar → Perempat Final → Semifinal → Final. Skor sama di waktu normal dilanjutkan 30 menit extra time, lalu adu penalti jika masih sama.",
+    rule5t: "Jadwal Kunci", rule5: "Pembukaan 11 Juni 2026 (Mexico City). 32 Besar mulai 28 Juni. Final 19 Juli 2026 di New York/New Jersey.",
+    sourceNote1: "Klasemen & hasil pertandingan: openfootball/worldcup.json (domain publik, CC0, diperbarui berkala oleh komunitas open source).",
+    sourceNote2: "Ranking FIFA, data ekonomi (PDB per kapita) dan demografi (populasi): estimasi resmi publik per Juni 2026.",
+    age0_14: "Catatan: faktor demografi memodelkan potensi talenta dari skala populasi, bukan prediksi langsung performa tim.",
+    revisionNote: "Revisi terbaru: bobot Ekonomi dan Demografi dipangkas drastis (dari 20% total menjadi 5%) agar negara kaya namun lemah secara sepak bola tidak diuntungkan secara tidak adil. Faktor Ranking FIFA kini lebih responsif (memperhitungkan poin aktual, bukan hanya posisi), Faktor Sejarah kini meluruh seiring waktu (gelar 2022 lebih bernilai dari gelar 1966), dan keuntungan tuan rumah hanya berlaku saat salah satu tim benar adalah negara penyelenggara (AS/Meksiko/Kanada).",
+    rulesTitle: "Peraturan & Format Turnamen",
+    // AI Predictor tab
+    predictorTitle: "AI Prediktor Pertandingan",
+    predictorIntro: "Pilih dua negara untuk melihat secara langkah-demi-langkah bagaimana algoritma menghitung peluang menang — mulai dari data mentah, faktor tertimbang, model gol Poisson, hingga ribuan simulasi mini.",
+    selectTeamA: "Negara A", selectTeamB: "Negara B", vs: "VS",
+    runPrediction: "Jalankan Prediksi", running: "Memproses…",
+    quickFixtures: "Pertandingan Mendatang",
+    stageEmptyTitle: "Pilih dua negara untuk mulai", stageEmptySub: "AI akan menampilkan visual proses analisisnya secara langsung di sini",
+    step1Title: "Mengambil data dasar kedua negara",
+    step2Title: "Menghitung faktor tertimbang",
+    step3Title: "Menyusun Skor Kekuatan",
+    step4Title: "Memodelkan ekspektasi gol (Poisson)",
+    step5Title: "Menjalankan simulasi pertandingan",
+    step6Title: "Verdict akhir AI",
+    thinking1: "Mengakses ranking FIFA terkini…",
+    thinking2: "Membaca form 2 laga terakhir dari data live…",
+    thinking3: "Menormalisasi indikator ekonomi & demografi (skala log)…",
+    thinking4: "Menghitung 6 faktor tertimbang untuk kedua tim…",
+    thinking5: "Menjumlahkan Skor Kekuatan akhir…",
+    thinking6: "Menurunkan λ gol dari selisih kekuatan…",
+    thinking7: "Menjalankan simulasi Monte Carlo mini (1.200x)…",
+    thinking8: "Menyusun verdict akhir…",
+    mostLikelyScore: "Skor Paling Mungkin",
+    confidenceLevel: "Tingkat Keyakinan",
+    winProb: "Peluang Menang", drawProbLbl: "Peluang Seri",
+    aiVerdictEyebrow: "VERDICT AI",
+    simOf: "dari", simulations: "simulasi",
+    closeMatch: "Pertandingan ketat — selisih kekuatan tipis.",
+    clearFavorite: "diunggulkan cukup jelas oleh algoritma.",
+    strongFavorite: "diunggulkan kuat oleh algoritma.",
+    confLow: "Rendah", confMed: "Sedang", confHigh: "Tinggi",
+    rerun: "Jalankan Ulang",
+    pickTwo: "Pilih dua negara berbeda terlebih dahulu.",
+    close: "Tutup",
+  },
+  en: {
+    appName: "Title Odds", appSub: "FIFA World Cup 2026™",
+    tabDashboard: "Dashboard", tabPredictor: "AI Predictor", tabTeams: "Teams", tabGroups: "Group Tables",
+    tabOverall: "Final Standings", tabHighlights: "Highlights", tabRules: "Rules", tabMethod: "Methodology",
+    live: "LIVE", lastSync: "Last sync", syncing: "Syncing live data…",
+    syncOk: "Connected to live data", syncFail: "Using base dataset — live sync failed",
+    championProb: "Title Probability", simRuns: "Monte Carlo simulations per update",
+    searchTeam: "Search team…", rankFifa: "FIFA Ranking", group: "Group",
+    host: "Host", population: "Population", gdpCap: "GDP per Capita",
+    titles: "World Cup Titles", capital: "Capital",
+    luckFactor: "Luck", formFactor: "Tournament Form", econFactor: "Economy",
+    demoFactor: "Demographics", histFactor: "History", rankFactor: "FIFA Ranking",
+    strengthScore: "Strength Score", winChance: "Title Chance",
+    map: "Country Location", factorBreakdown: "Algorithm Factor Breakdown", openInMaps: "Open in Google Maps",
+    matchesPlayed: "Played", win: "W", draw: "D", loss: "L", goalDiff: "GD", points: "Pts", qualified: "Qualified",
+    overallTitle: "Final Standings & Title Prediction",
+    overallSub: "Ranked by the algorithm's probability of becoming champion",
+    predictedChampion: "Predicted Champion — Algorithm & AI",
+    aiAnalysis: "AI Analysis",
+    highlightsTitle: "Match Highlights", highlightsSub: "Official videos from YouTube",
+    watchYoutube: "Watch on YouTube", searchYoutube: "Search highlights on YouTube",
+    methodTitle: "Algorithm Methodology",
+    backToList: "Back",
+    footerNote: "Statistical projections from simulation, not a guarantee of outcomes. Football stays beautiful because of its uncertainty.",
+    team: "Team",
+    noMatchesYet: "No matches played in this group yet.",
+    allGroups: "All Groups",
+    statTitle: "Tournament Stats", teamsCount: "Teams", groupsCount: "Groups",
+    matchesTotal: "Total Matches", daysLeft: "Days to Final",
+    finalDate: "Final July 19, 2026 — New York/New Jersey",
+    knockoutStart: "Round of 32 begins June 28, 2026",
+    methodologyP1: "The algorithm blends six measurable factors into a single Strength Score for every nation, then runs a Monte Carlo simulation of the rest of the tournament — including unplayed group matches and the entire knockout bracket — thousands of times to produce a championship probability distribution.",
+    methodologyP2: "Each simulation models match scorelines using a Poisson distribution, where each team's expected goals (λ) is derived from the Strength Score gap between the two sides. The luck factor is re-rolled on every simulation to represent football's natural variance.",
+    weightLabel: "Weight", overview: "Overview",
+    methodInputs: "Factor Inputs", methodFormula: "Strength Score Formula",
+    poissonNote: "Poisson goal model — λ derived from the Strength Score gap between both teams",
+    rulesIntro: "The 2026 edition is the largest World Cup in history: 48 nations, 12 groups, 104 matches, across three host nations.",
+    rule1t: "Group Stage", rule1: "48 teams are split into 12 groups (A–L) of 4. Each team plays 3 round-robin matches within its group.",
+    rule2t: "Round of 32 Qualification", rule2: "Group winners and runners-up (24 teams) automatically advance, plus the 8 best third-placed teams across all groups — 32 teams total reach the knockouts.",
+    rule3t: "Tiebreakers", rule3: "Group order is decided by: (1) points, (2) goal difference, (3) goals scored, (4) head-to-head result, (5) fair play, (6) drawing of lots.",
+    rule4t: "Knockout Stage", rule4: "Round of 32 → Round of 16 → Quarter-finals → Semi-finals → Final. Draws after full time go to 30 minutes of extra time, then penalties if still level.",
+    rule5t: "Key Dates", rule5: "Opener June 11, 2026 (Mexico City). Round of 32 begins June 28. Final July 19, 2026 at New York/New Jersey.",
+    sourceNote1: "Standings & results: openfootball/worldcup.json (public domain, CC0, updated periodically by the open-source community).",
+    sourceNote2: "FIFA rankings, GDP per capita, and population data: public official estimates as of June 2026.",
+    age0_14: "Note: the demographic factor models talent-pool potential from population scale, not a direct performance prediction.",
+    revisionNote: "Latest revision: Economy and Demographics weights were cut sharply (from 20% combined to 5%) so wealthy-but-weak footballing nations no longer get an unfair boost. The FIFA Ranking factor is now more responsive (accounting for actual points, not just position), the History factor now decays over time (a 2022 title counts more than a 1966 one), and a host-nation edge only applies when one of the two teams is actually a tournament host (USA/Mexico/Canada).",
+    rulesTitle: "Rules & Tournament Format",
+    predictorTitle: "AI Match Predictor",
+    predictorIntro: "Pick two countries to watch, step by step, exactly how the algorithm computes win odds — from raw data, to weighted factors, to a Poisson goal model, to thousands of mini-simulations.",
+    selectTeamA: "Team A", selectTeamB: "Team B", vs: "VS",
+    runPrediction: "Run Prediction", running: "Processing…",
+    quickFixtures: "Upcoming Fixtures",
+    stageEmptyTitle: "Pick two countries to begin", stageEmptySub: "The AI will render its live analysis process right here",
+    step1Title: "Fetching base data for both nations",
+    step2Title: "Computing weighted factors",
+    step3Title: "Assembling the Strength Score",
+    step4Title: "Modeling expected goals (Poisson)",
+    step5Title: "Running match simulations",
+    step6Title: "Final AI verdict",
+    thinking1: "Accessing current FIFA rankings…",
+    thinking2: "Reading last 2 matches from live data…",
+    thinking3: "Normalizing economic & demographic indicators (log scale)…",
+    thinking4: "Computing 6 weighted factors for both teams…",
+    thinking5: "Summing final Strength Scores…",
+    thinking6: "Deriving goal λ from the strength gap…",
+    thinking7: "Running mini Monte Carlo simulation (1,200x)…",
+    thinking8: "Assembling final verdict…",
+    mostLikelyScore: "Most Likely Score",
+    confidenceLevel: "Confidence Level",
+    winProb: "Win Probability", drawProbLbl: "Draw Probability",
+    aiVerdictEyebrow: "AI VERDICT",
+    simOf: "of", simulations: "simulations",
+    closeMatch: "Tight matchup — the strength gap is thin.",
+    clearFavorite: "is a fairly clear favorite per the algorithm.",
+    strongFavorite: "is a strong favorite per the algorithm.",
+    confLow: "Low", confMed: "Medium", confHigh: "High",
+    rerun: "Run Again",
+    pickTwo: "Please pick two different countries first.",
+    close: "Close",
+  },
+};
+
+/* ============================================================================
+   ALGORITHM ENGINE — Strength Score + Monte Carlo Championship Simulation
+   ============================================================================ */
+
+// World Cup title years per nation (stable historical fact, source: FIFA.com).
+// Used to time-decay the history factor: a 2022 title should count for far
+// more than a 1966 one, per critique -- mentality/pedigree fades with decades,
+// it shouldn't be a permanent flat bonus.
+const TITLE_YEARS = {
+  BRA: [1958, 1962, 1970, 1994, 2002],
+  GER: [1954, 1974, 1990, 2014],
+  ARG: [1978, 1986, 2022],
+  URU: [1930, 1950],
+  FRA: [1998, 2018],
+  ESP: [2010],
+  ENG: [1966],
+};
+const CURRENT_YEAR = 2026;
+const HIST_HALF_LIFE = 20; // a title this many years old retains half its fresh value
+
+// Actual FIFA points range across the 48-team field, used to make the rank
+// factor ELO-responsive (not just based on ordinal position) -- two teams a
+// single rank apart but 80 points apart in rating are meaningfully different.
+const FIFA_POINTS_VALUES = TEAMS_RAW.map((t) => t.fifaPoints);
+const FIFA_POINTS_MAX = Math.max(...FIFA_POINTS_VALUES);
+const FIFA_POINTS_MIN = Math.min(...FIFA_POINTS_VALUES);
+
+// The three co-host nations: a small, venue-specific edge applies only when
+// one of these plays a non-host opponent (per critique -- most 2026 fixtures
+// are neutral-venue between two non-host nations, e.g. Argentina vs France in
+// Miami, and should get no artificial home/away split).
+const HOST_CODES = new Set(["USA", "MEX", "CAN"]);
+
+function mulberry32(seed) {
+  let a = seed >>> 0;
+  return function () {
+    a |= 0; a = (a + 0x6D2B79F5) | 0;
+    let x = Math.imul(a ^ (a >>> 15), 1 | a);
+    x = (x + Math.imul(x ^ (x >>> 7), 61 | x)) ^ x;
+    return ((x ^ (x >>> 14)) >>> 0) / 4294967296;
+  };
+}
+function hashStr(s) {
+  let h = 2166136261;
+  for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); }
+  return h >>> 0;
+}
+function gaussian(rnd, mean, sd) {
+  const u1 = Math.max(rnd(), 1e-9), u2 = rnd();
+  const z = Math.sqrt(-2 * Math.log(u1)) * Math.cos(2 * Math.PI * u2);
+  return mean + z * sd;
+}
+function poissonSample(rnd, lambda) {
+  const L = Math.exp(-lambda);
+  let k = 0, p = 1;
+  for (;;) {
+    p *= rnd();
+    if (p <= L) return k;
+    k += 1;
+    if (k > 12) return k;
+  }
+}
+function poissonPMF(lambda, k) {
+  // k! via loop (k is small, <=6 for display)
+  let fact = 1;
+  for (let i = 2; i <= k; i++) fact *= i;
+  return (Math.pow(lambda, k) * Math.exp(-lambda)) / fact;
+}
+
+function buildFormLookup(standingsByGroup) {
+  const form = {};
+  Object.values(standingsByGroup).forEach((rows) => {
+    rows.forEach((r) => {
+      const ppg = r.p > 0 ? r.pts / r.p : 1.0;
+      form[r.code] = { ppg, gd: r.gf - r.ga, played: r.p, gf: r.gf, ga: r.ga, pts: r.pts };
+    });
+  });
+  return form;
+}
+
+// Hybrid rank factor: keeps the proven ordinal-rank curve as a base (it
+// orders teams correctly), then nudges it by where the team's *actual* FIFA
+// points sit within the observed field range. This makes the factor more
+// ELO-like/responsive -- e.g. a team 18 points behind #1 (effectively a
+// near-tie) reads differently than a team 800 points behind, even if both
+// are just "rank 2".
+function rankFactorOf(team) {
+  const base = 100 / (1 + (team.fifaRank - 1) / 14.0);
+  const range = FIFA_POINTS_MAX - FIFA_POINTS_MIN;
+  const norm = range > 0 ? (team.fifaPoints - FIFA_POINTS_MIN) / range : 0.5;
+  const modifier = (norm - 0.5) * 16; // +/-8 max nudge
+  return Math.max(0, Math.min(100, base + modifier));
+}
+
+// Tournament form factor: widened the goal-difference saturation window so a
+// single big win doesn't immediately max it out (was clamp(15+gd*3, 0, 30),
+// saturating at GD=+5; now clamp(15+gd*2, 0, 40), saturating at GD=+12.5).
+function formFactorOf(formLookup, code) {
+  const f = formLookup[code] || { ppg: 1.0, gd: 0, played: 0 };
+  return Math.min(100, (f.ppg / 3.0) * 60 + Math.max(0, Math.min(40, 15 + f.gd * 2)));
+}
+
+// History factor with time-decay: each title contributes up to 28 points at
+// age zero, halving every HIST_HALF_LIFE years, plus a flat +10 floor so a
+// team with zero titles isn't scored at hard zero. A 2022 title is worth far
+// more than a 1966 one now, instead of both counting identically forever.
+function histFactorOf(code) {
+  const years = TITLE_YEARS[code];
+  if (!years || years.length === 0) return 10.0;
+  let score = 0;
+  years.forEach((y) => {
+    const age = Math.max(0, CURRENT_YEAR - y);
+    const decay = Math.pow(0.5, age / HIST_HALF_LIFE);
+    score += 28 * decay;
+  });
+  return Math.min(100, 10 + score);
+}
+
+function computeFactors(team, formLookup, daySeed) {
+  const rankFactor = rankFactorOf(team);
+  const formFactor = formFactorOf(formLookup, team.code);
+  const econFactor = Math.min(100, (Math.log(team.gdpCap) / Math.log(100000)) * 100);
+  const demoFactor = Math.min(100, (Math.log(team.pop) / Math.log(350)) * 100);
+  const histFactor = histFactorOf(team.code);
+  const rnd = mulberry32(hashStr(team.code + "::" + daySeed));
+  const luckFactor = Math.max(0, Math.min(100, gaussian(rnd, 50, 22)));
+  const strength =
+    rankFactor * FACTOR_WEIGHTS.rank + formFactor * FACTOR_WEIGHTS.form +
+    econFactor * FACTOR_WEIGHTS.econ + demoFactor * FACTOR_WEIGHTS.demo +
+    histFactor * FACTOR_WEIGHTS.hist + luckFactor * FACTOR_WEIGHTS.luck;
+  const f = formLookup[team.code] || { ppg: 1.0, gd: 0, played: 0 };
+  return { rankFactor, formFactor, econFactor, demoFactor, histFactor, luckFactor, strength, formStats: f };
+}
+
+function simulateOneTournament(teams, formLookup, daySeed, simIndex) {
+  const rnd = mulberry32(hashStr(daySeed + "::sim::" + simIndex));
+  const strengths = {};
+  teams.forEach((tm) => {
+    // Reuses the exact same factor formulas as computeFactors (rankFactorOf,
+    // formFactorOf, histFactorOf) so the single-team detail view and the
+    // tournament simulation can never silently drift out of sync.
+    const rankFactor = rankFactorOf(tm);
+    const formFactor = formFactorOf(formLookup, tm.code);
+    const econFactor = Math.min(100, (Math.log(tm.gdpCap) / Math.log(100000)) * 100);
+    const demoFactor = Math.min(100, (Math.log(tm.pop) / Math.log(350)) * 100);
+    const histFactor = histFactorOf(tm.code);
+    const luckFactor = Math.max(0, Math.min(100, gaussian(rnd, 50, 22)));
+    strengths[tm.code] =
+      rankFactor * FACTOR_WEIGHTS.rank + formFactor * FACTOR_WEIGHTS.form +
+      econFactor * FACTOR_WEIGHTS.econ + demoFactor * FACTOR_WEIGHTS.demo +
+      histFactor * FACTOR_WEIGHTS.hist + luckFactor * FACTOR_WEIGHTS.luck;
+  });
+
+  function playMatch(a, b) {
+    let diff = (strengths[a] - strengths[b]) / 22.0;
+    // Per critique: only nudge for a host-nation edge when exactly one side
+    // is a 2026 co-host (USA/MEX/CAN). Two non-host nations meeting on host
+    // soil (e.g. Argentina vs France in Miami) stay fully neutral.
+    const aHost = HOST_CODES.has(a), bHost = HOST_CODES.has(b);
+    if (aHost && !bHost) diff += 0.18;
+    else if (bHost && !aHost) diff -= 0.18;
+    const lamA = Math.max(0.45, 1.35 + diff), lamB = Math.max(0.45, 1.35 - diff);
+    return [poissonSample(rnd, lamA), poissonSample(rnd, lamB)];
+  }
+
+  const groups = {};
+  teams.forEach((tm) => (groups[tm.group] = groups[tm.group] || []).push(tm.code));
+  const groupRanked = {}, thirdPlaceList = [];
+  GROUP_LETTERS.forEach((g) => {
+    const codes = groups[g]; if (!codes) return;
+    const table = {};
+    codes.forEach((c) => (table[c] = { pts: 0, gf: 0, ga: 0 }));
+    for (let i = 0; i < codes.length; i++) {
+      for (let j = i + 1; j < codes.length; j++) {
+        const [ga, gb] = playMatch(codes[i], codes[j]);
+        table[codes[i]].gf += ga; table[codes[i]].ga += gb;
+        table[codes[j]].gf += gb; table[codes[j]].ga += ga;
+        if (ga > gb) table[codes[i]].pts += 3;
+        else if (gb > ga) table[codes[j]].pts += 3;
+        else { table[codes[i]].pts += 1; table[codes[j]].pts += 1; }
+      }
+    }
+    const ranked = [...codes].sort((x, y) => {
+      const px = table[x].pts, py = table[y].pts;
+      if (px !== py) return py - px;
+      const gdx = table[x].gf - table[x].ga, gdy = table[y].gf - table[y].ga;
+      if (gdx !== gdy) return gdy - gdx;
+      return table[y].gf - table[x].gf;
+    });
+    groupRanked[g] = ranked;
+    thirdPlaceList.push(ranked[2]);
+  });
+
+  const qualified = [];
+  GROUP_LETTERS.forEach((g) => groupRanked[g] && qualified.push(groupRanked[g][0], groupRanked[g][1]));
+  const bestThirds = [...thirdPlaceList].sort((a, b) => strengths[b] - strengths[a]).slice(0, 8);
+  let bracket = [...qualified, ...bestThirds];
+  for (let i = bracket.length - 1; i > 0; i--) {
+    const j = Math.floor(rnd() * (i + 1));
+    [bracket[i], bracket[j]] = [bracket[j], bracket[i]];
+  }
+  while (bracket.length > 1) {
+    const next = [];
+    for (let i = 0; i < bracket.length; i += 2) {
+      const a = bracket[i], b = bracket[i + 1];
+      const [ga, gb] = playMatch(a, b);
+      let winner;
+      if (ga === gb) {
+        const pa = strengths[a] / (strengths[a] + strengths[b]);
+        winner = rnd() < pa ? a : b;
+      } else winner = ga > gb ? a : b;
+      next.push(winner);
+    }
+    bracket = next;
+  }
+  return bracket[0];
+}
+
+function runMonteCarlo(teams, standingsByGroup, daySeed, runs) {
+  const formLookup = buildFormLookup(standingsByGroup);
+  const wins = {};
+  teams.forEach((tm) => (wins[tm.code] = 0));
+  for (let i = 0; i < runs; i++) {
+    const champ = simulateOneTournament(teams, formLookup, daySeed, i);
+    wins[champ] = (wins[champ] || 0) + 1;
+  }
+  const results = teams.map((tm) => ({ code: tm.code, probability: (wins[tm.code] || 0) / runs }));
+  results.sort((a, b) => b.probability - a.probability);
+  return results;
+}
+
+// Single-match simulator used by the AI Predictor (independent of tournament context)
+function simulateSingleMatch(teamA, teamB, formLookup, daySeed, runs) {
+  const rnd = mulberry32(hashStr(daySeed + "::match::" + teamA.code + teamB.code));
+  let winsA = 0, winsB = 0, draws = 0;
+  const scoreTally = {};
+  // average strength across a handful of draws to stabilize the headline factor numbers,
+  // while still leaving per-run luck variance for the simulation itself
+  const factorsA = computeFactors(teamA, formLookup, daySeed);
+  const factorsB = computeFactors(teamB, formLookup, daySeed);
+
+  for (let i = 0; i < runs; i++) {
+    const luckA = Math.max(0, Math.min(100, gaussian(rnd, 50, 22)));
+    const luckB = Math.max(0, Math.min(100, gaussian(rnd, 50, 22)));
+    const sA = factorsA.strength - factorsA.luckFactor * FACTOR_WEIGHTS.luck + luckA * FACTOR_WEIGHTS.luck;
+    const sB = factorsB.strength - factorsB.luckFactor * FACTOR_WEIGHTS.luck + luckB * FACTOR_WEIGHTS.luck;
+    let diff = (sA - sB) / 22.0;
+    const aHost = HOST_CODES.has(teamA.code), bHost = HOST_CODES.has(teamB.code);
+    if (aHost && !bHost) diff += 0.18;
+    else if (bHost && !aHost) diff -= 0.18;
+    const lamA = Math.max(0.45, 1.35 + diff), lamB = Math.max(0.45, 1.35 - diff);
+    const ga = poissonSample(rnd, lamA), gb = poissonSample(rnd, lamB);
+    if (ga > gb) winsA++; else if (gb > ga) winsB++; else draws++;
+    const key = ga + "-" + gb;
+    scoreTally[key] = (scoreTally[key] || 0) + 1;
+  }
+  let bestScore = "1-1", bestCount = -1;
+  Object.entries(scoreTally).forEach(([k, v]) => { if (v > bestCount) { bestCount = v; bestScore = k; } });
+
+  let diffBase = (factorsA.strength - factorsB.strength) / 22.0;
+  const aHostBase = HOST_CODES.has(teamA.code), bHostBase = HOST_CODES.has(teamB.code);
+  if (aHostBase && !bHostBase) diffBase += 0.18;
+  else if (bHostBase && !aHostBase) diffBase -= 0.18;
+  const lamA0 = Math.max(0.45, 1.35 + diffBase), lamB0 = Math.max(0.45, 1.35 - diffBase);
+
+  return {
+    factorsA, factorsB,
+    pWinA: winsA / runs, pDraw: draws / runs, pWinB: winsB / runs,
+    bestScore, bestScoreShare: bestCount / runs,
+    lamA: lamA0, lamB: lamB0,
+    runs,
+  };
+}
+
+/* ============================================================================
+   LIVE DATA SYNC — openfootball/worldcup.json (CORS, public domain, no key)
+   ============================================================================ */
+function parseLiveStandings(liveJson, teams) {
+  const nameToCode = {};
+  teams.forEach((t) => { nameToCode[t.name.toLowerCase()] = t.code; nameToCode[t.name_id.toLowerCase()] = t.code; });
+  const aliases = {
+    "south korea": "KOR", "korea republic": "KOR", "czech republic": "CZE", "czechia": "CZE",
+    "ivory coast": "CIV", "côte d'ivoire": "CIV", "cote d'ivoire": "CIV",
+    "usa": "USA", "united states": "USA", "iran": "IRN", "ir iran": "IRN",
+    "bosnia and herzegovina": "BIH", "cabo verde": "CPV", "cape verde": "CPV",
+    "dr congo": "COD", "congo dr": "COD", "türkiye": "TUR", "turkiye": "TUR", "turkey": "TUR",
+    "curaçao": "CUW", "curacao": "CUW", "saudi arabia": "KSA",
+  };
+  Object.entries(aliases).forEach(([k, v]) => (nameToCode[k] = v));
+  function codeFor(name) { if (!name) return null; return nameToCode[name.toLowerCase().trim()] || null; }
+
+  const table = {};
+  teams.forEach((t) => (table[t.code] = { code: t.code, p: 0, w: 0, d: 0, l: 0, gf: 0, ga: 0, pts: 0 }));
+  let matchesPlayed = 0;
+  const recentByTeam = {};
+  (liveJson.matches || []).forEach((m) => {
+    if (!m.score || !m.score.ft) return;
+    const c1 = codeFor(m.team1), c2 = codeFor(m.team2);
+    if (!c1 || !c2 || !table[c1] || !table[c2]) return;
+    const [g1, g2] = m.score.ft;
+    table[c1].p += 1; table[c2].p += 1;
+    table[c1].gf += g1; table[c1].ga += g2;
+    table[c2].gf += g2; table[c2].ga += g1;
+    if (g1 > g2) { table[c1].w += 1; table[c1].pts += 3; table[c2].l += 1; }
+    else if (g2 > g1) { table[c2].w += 1; table[c2].pts += 3; table[c1].l += 1; }
+    else { table[c1].d += 1; table[c2].d += 1; table[c1].pts += 1; table[c2].pts += 1; }
+    matchesPlayed += 1;
+    (recentByTeam[c1] = recentByTeam[c1] || []).push({ opp: c2, gf: g1, ga: g2, date: m.date });
+    (recentByTeam[c2] = recentByTeam[c2] || []).push({ opp: c1, gf: g2, ga: g1, date: m.date });
+  });
+
+  const byGroup = {};
+  teams.forEach((t) => (byGroup[t.group] = byGroup[t.group] || []).push(table[t.code]));
+  Object.keys(byGroup).forEach((g) => {
+    byGroup[g].sort((a, b) => {
+      if (b.pts !== a.pts) return b.pts - a.pts;
+      const gdA = a.gf - a.ga, gdB = b.gf - b.ga;
+      if (gdB !== gdA) return gdB - gdA;
+      return b.gf - a.gf;
+    });
+  });
+  return { byGroup, matchesPlayed, rawMatches: liveJson.matches || [], recentByTeam };
+}
+
+const LiveData = {
+  status: "idle", standings: FALLBACK_STANDINGS, matches: [], matchesPlayed: null, lastSync: null, recentByTeam: {},
+  listeners: [],
+  onChange(fn) { this.listeners.push(fn); },
+  emit() { this.listeners.forEach((fn) => fn(this)); },
+  async sync() {
+    this.status = "loading"; this.emit();
+    try {
+      const res = await fetch(LIVE_DATA_URL, { cache: "no-store" });
+      if (!res.ok) throw new Error("bad response");
+      const json = await res.json();
+      const parsed = parseLiveStandings(json, TEAMS_RAW);
+      if (parsed.matchesPlayed > 0) {
+        this.status = "ok"; this.standings = parsed.byGroup; this.matches = parsed.rawMatches;
+        this.matchesPlayed = parsed.matchesPlayed; this.lastSync = new Date(); this.recentByTeam = parsed.recentByTeam;
+      } else throw new Error("no matches parsed");
+    } catch (e) {
+      this.status = "error";
+      if (!this.standings || !Object.keys(this.standings).length) this.standings = FALLBACK_STANDINGS;
+    }
+    this.emit();
+  },
+};
+
+/* ============================================================================
+   HELPERS
+   ============================================================================ */
+function fmtPct(p) {
+  if (p >= 0.1) return (p * 100).toFixed(1) + "%";
+  if (p >= 0.01) return (p * 100).toFixed(2) + "%";
+  return (p * 100).toFixed(3) + "%";
+}
+function fmtMoney(n) { return n >= 1000 ? "$" + Math.round(n / 1000) + "k" : "$" + n; }
+function fmtPop(n) { return n.toFixed(1) + "M"; }
+function daysUntil(dateStr) {
+  const target = new Date(dateStr + "T00:00:00Z");
+  return Math.ceil((target - new Date()) / 86400000);
+}
+function teamByCode(code) { return TEAMS_RAW.find((t) => t.code === code); }
+function esc(s) { const d = document.createElement("div"); d.textContent = s; return d.innerHTML; }
+
+/* ============================================================================
+   FADE-IN ANIMATION HELPERS
+   ============================================================================
+   Two independent, additive mechanisms:
+   1) applySectionStagger(panel) -- runs right after a panel's innerHTML is
+      (re)written. It walks the panel's direct children ("sections") and
+      gives each one a staggered fade-up via the .reveal-stagger class +
+      an inline animation-delay, purely cosmetic, no layout/markup change.
+   2) initScrollReveal() -- a single shared IntersectionObserver that finds
+      any element carrying .scroll-reveal (added by applySectionStagger to
+      the same direct children) and toggles .in-view as it scrolls into the
+      viewport, giving the "fade in from below on scroll" effect requested,
+      on top of and independent from the tab-switch stagger above.
+   Neither mechanism touches existing classes, ids, or structure -- they only
+   ever *add* .reveal-stagger / .scroll-reveal / .in-view to elements that
+   already exist from the original render*() functions.
+   ============================================================================ */
+let __scrollRevealObserver = null;
+
+function initScrollReveal() {
+  if (__scrollRevealObserver) return __scrollRevealObserver;
+  if (!("IntersectionObserver" in window)) return null;
+  __scrollRevealObserver = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add("in-view");
+        __scrollRevealObserver.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.08, rootMargin: "0px 0px -6% 0px" });
+  return __scrollRevealObserver;
+}
+
+function applySectionStagger(panel) {
+  if (!panel) return;
+  const observer = initScrollReveal();
+  // Direct children of the panel are treated as "sections" (stat strips,
+  // boards, cards, grids, etc. as authored by each render*() function).
+  const sections = Array.from(panel.children);
+  sections.forEach((el, i) => {
+    // Tab-switch entrance: immediate staggered fade-up, capped delay so a
+    // panel with many sections still feels snappy rather than sluggish.
+    el.classList.remove("reveal-stagger");
+    // force reflow so re-adding the class re-triggers the CSS animation
+    // even if the same panel is re-rendered back-to-back (e.g. language toggle)
+    void el.offsetWidth;
+    el.style.animationDelay = (Math.min(i, 8) * 60) + "ms";
+    el.classList.add("reveal-stagger");
+
+    // Scroll entrance: the first couple of sections are already on screen
+    // the moment the tab opens (the stagger above handles those), but
+    // everything is also eligible for the scroll-from-below reveal so that
+    // re-scrolling up and back down, or simply scrolling further into a
+    // long tab, keeps producing the fade-in-from-bottom effect.
+    el.classList.add("scroll-reveal");
+    el.classList.remove("in-view");
+    if (observer) {
+      observer.observe(el);
+    } else {
+      // no IntersectionObserver support: just show it immediately
+      el.classList.add("in-view");
+    }
+    // Anything already within the viewport right when the tab opens should
+    // reveal immediately rather than waiting for a scroll event.
+    requestAnimationFrame(() => {
+      const rect = el.getBoundingClientRect();
+      if (rect.top < window.innerHeight * 0.92 && rect.bottom > 0) {
+        el.classList.add("in-view");
+        if (observer) observer.unobserve(el);
+      }
+    });
+  });
+}
+
+function showToast(msg) {
+  const host = document.getElementById("toastHost");
+  const el = document.createElement("div");
+  el.className = "toast"; el.textContent = msg;
+  host.appendChild(el);
+  setTimeout(() => el.remove(), 3200);
+}
+
+/* ============================================================================
+   GLOBAL APP STATE
+   ============================================================================ */
+const State = {
+  lang: "id",
+  activeTab: "dashboard",
+  selectedTeamCode: null,
+  daySeed: null,
+  formLookup: null,
+  probResults: null,
+  SIM_RUNS: 2200,
+};
+
+function t(key) { return STR[State.lang][key] ?? key; }
+
+function recomputeDerived() {
+  const d = new Date().toISOString().slice(0, 10);
+  const mp = LiveData.matchesPlayed ?? "base";
+  State.daySeed = d + "::" + mp;
+  State.formLookup = buildFormLookup(LiveData.standings);
+  State.probResults = runMonteCarlo(TEAMS_RAW, LiveData.standings, State.daySeed, State.SIM_RUNS);
+}
+
+/* ============================================================================
+   RENDER: DASHBOARD TAB
+   ============================================================================ */
+function renderDashboard() {
+  const top10 = State.probResults.slice(0, 10);
+  const maxProb = top10[0]?.probability || 0.01;
+  const daysLeft = Math.max(0, daysUntil("2026-07-19"));
+  const matchesPlayed = LiveData.matchesPlayed ?? Math.round(
+    Object.values(LiveData.standings).flat().reduce((s, r) => s + r.p, 0) / 2
+  );
+
+  const rowsHtml = top10.map((r, i) => {
+    const team = teamByCode(r.code);
+    if (!team) return "";
+    const widthPct = Math.max(3, (r.probability / maxProb) * 100);
+    const name = State.lang === "id" ? team.name_id : team.name;
+    return `
+      <button class="board-row" data-team="${team.code}" data-action="open-team">
+        <span class="rank-num ${i === 0 ? "first" : ""}">${String(i + 1).padStart(2, "0")}</span>
+        <span class="flag">${FLAG_EMOJI[team.code]}</span>
+        <div>
+          <div class="row-name">${esc(name)}${team.host ? `<span class="host-badge">${t("host").toUpperCase()}</span>` : ""}</div>
+          <div class="sparkbar"><div class="sparkbar-fill" style="width:${widthPct}%;background:${i === 0 ? "var(--gold)" : "var(--green)"}"></div></div>
+        </div>
+        <span class="row-pct ${i === 0 ? "first" : ""}">${fmtPct(r.probability)}</span>
+      </button>`;
+  }).join("");
+
+  document.getElementById("panel-dashboard").innerHTML = `
+    <div class="stat-strip">
+      <div class="stat-cell"><div class="stat-val">48</div><div class="stat-lbl">${t("teamsCount")}</div></div>
+      <div class="stat-cell"><div class="stat-val">12</div><div class="stat-lbl">${t("groupsCount")}</div></div>
+      <div class="stat-cell"><div class="stat-val">104</div><div class="stat-lbl">${t("matchesTotal")}</div></div>
+      <div class="stat-cell"><div class="stat-val">${daysLeft}</div><div class="stat-lbl">${t("daysLeft")}</div></div>
+    </div>
+
+    <div style="display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:8px;margin-bottom:4px;">
+      <div class="section-label"><div class="bar"></div><span class="lbl">${t("championProb")}</span></div>
+      <span style="font-size:11px;color:var(--text-faint);font-family:var(--ff-mono);">${State.SIM_RUNS.toLocaleString("en-US")} ${t("simRuns")}</span>
+    </div>
+    <div class="board">${rowsHtml}</div>
+
+    <div style="margin-top:26px;">
+      <div class="section-label"><div class="bar" style="background:var(--green)"></div><span class="lbl">${t("statTitle")}</span></div>
+      <div class="info-grid">
+        <div class="info-card"><span class="info-ic">⚽</span><div><div class="info-title">${t("knockoutStart")}</div><div class="info-sub">28 Jun – 19 Jul 2026</div></div></div>
+        <div class="info-card"><span class="info-ic">🏆</span><div><div class="info-title">${t("finalDate")}</div><div class="info-sub">MetLife Stadium</div></div></div>
+        <div class="info-card"><span class="info-ic">📡</span><div><div class="info-title">${(State.lang === "id" ? "Pertandingan dimainkan: " : "Matches played: ") + matchesPlayed + " / 104"}</div><div class="info-sub">${LiveData.status === "ok" ? t("syncOk") : t("syncFail")}</div></div></div>
+      </div>
+    </div>
+  `;
+}
+
+/* ============================================================================
+   RENDER: TEAMS TAB
+   ============================================================================ */
+let teamsFilterState = { query: "", group: "ALL" };
+
+function renderTeams() {
+  if (State.selectedTeamCode) { renderTeamDetail(State.selectedTeamCode); return; }
+
+  const probByCode = {};
+  State.probResults.forEach((r) => (probByCode[r.code] = r.probability));
+
+  const groupOptions = GROUP_LETTERS.map((g) => `<option value="${g}">${t("group")} ${g}</option>`).join("");
+
+  document.getElementById("panel-teams").innerHTML = `
+    <div class="search-row">
+      <input class="search-input" id="teamSearch" placeholder="${t("searchTeam")}" value="${esc(teamsFilterState.query)}">
+      <select class="group-select" id="teamGroupFilter">
+        <option value="ALL">${t("allGroups")}</option>
+        ${groupOptions}
+      </select>
+    </div>
+    <div class="teams-grid" id="teamsGrid"></div>
+  `;
+
+  document.getElementById("teamGroupFilter").value = teamsFilterState.group;
+
+  function renderGrid() {
+    const filtered = TEAMS_RAW
+      .filter((tm) => (teamsFilterState.group === "ALL" ? true : tm.group === teamsFilterState.group))
+      .filter((tm) => {
+        const q = teamsFilterState.query.trim().toLowerCase();
+        if (!q) return true;
+        return tm.name.toLowerCase().includes(q) || tm.name_id.toLowerCase().includes(q) || tm.code.toLowerCase().includes(q);
+      })
+      .sort((a, b) => (probByCode[b.code] || 0) - (probByCode[a.code] || 0));
+
+    document.getElementById("teamsGrid").innerHTML = filtered.map((tm) => {
+      const name = State.lang === "id" ? tm.name_id : tm.name;
+      return `
+        <button class="team-card" data-team="${tm.code}" data-action="open-team">
+          <span class="flag" style="font-size:26px;">${FLAG_EMOJI[tm.code]}</span>
+          <div style="flex:1;min-width:0;">
+            <div class="team-card-name">${esc(name)}</div>
+            <div class="team-card-meta">${t("group")} ${tm.group} · #${tm.fifaRank} FIFA</div>
+          </div>
+          <div class="team-card-pct">${fmtPct(probByCode[tm.code] || 0)}</div>
+        </button>`;
+    }).join("");
+  }
+  renderGrid();
+
+  document.getElementById("teamSearch").addEventListener("input", (e) => {
+    teamsFilterState.query = e.target.value; renderGrid();
+  });
+  document.getElementById("teamGroupFilter").addEventListener("change", (e) => {
+    teamsFilterState.group = e.target.value; renderGrid();
+  });
+}
+
+function renderTeamDetail(code) {
+  const team = teamByCode(code);
+  const probByCode = {};
+  State.probResults.forEach((r) => (probByCode[r.code] = r.probability));
+  const probability = probByCode[code] || 0;
+  const factors = computeFactors(team, State.formLookup, State.daySeed);
+  const groupMates = TEAMS_RAW.filter((tm) => tm.group === team.group && tm.code !== team.code);
+  const name = State.lang === "id" ? team.name_id : team.name;
+
+  // Google Maps legacy embed endpoint: no API key required, free, stable since ~2014.
+  // Zoom is chosen per-country footprint so small nations don't render as a blank ocean view.
+  const mapZoom = team.pop < 2 ? 8 : team.pop < 15 ? 6 : team.pop < 60 ? 5 : 4;
+  const mapEmbedSrc = `https://maps.google.com/maps?q=${team.lat},${team.lon}&z=${mapZoom}&output=embed`;
+  const mapOpenUrl = `https://www.google.com/maps/search/?api=1&query=${team.lat},${team.lon}`;
+
+  const factorRows = [
+    { label: t("rankFactor"), value: factors.rankFactor, weight: FACTOR_WEIGHTS.rank, color: "var(--gold)" },
+    { label: t("formFactor"), value: factors.formFactor, weight: FACTOR_WEIGHTS.form, color: "var(--green)" },
+    { label: t("histFactor"), value: factors.histFactor, weight: FACTOR_WEIGHTS.hist, color: "var(--blue)" },
+    { label: t("econFactor"), value: factors.econFactor, weight: FACTOR_WEIGHTS.econ, color: "var(--blue)" },
+    { label: t("demoFactor"), value: factors.demoFactor, weight: FACTOR_WEIGHTS.demo, color: "var(--blue)" },
+    { label: t("luckFactor"), value: factors.luckFactor, weight: FACTOR_WEIGHTS.luck, color: "var(--red)" },
+  ];
+
+  const factorHtml = factorRows.map((f) => `
+    <div class="factor-row">
+      <div class="factor-head">
+        <span class="factor-name">${f.label}</span>
+        <span class="factor-val">${f.value.toFixed(1)} <span class="wt">· ${t("weightLabel")} ${(f.weight * 100).toFixed(0)}%</span></span>
+      </div>
+      <div class="sparkbar"><div class="sparkbar-fill" style="width:${f.value}%;background:${f.color}"></div></div>
+    </div>`).join("");
+
+  document.getElementById("panel-teams").innerHTML = `
+    <button class="back-btn" id="backToTeams">← ${t("backToList")}</button>
+    <div class="detail-head">
+      <span class="detail-flag">${FLAG_EMOJI[team.code]}</span>
+      <div>
+        <h2 class="detail-name">${esc(name)}</h2>
+        <div class="detail-meta">${t("group")} ${team.group} · #${team.fifaRank} ${t("rankFifa")} · ${team.confed}</div>
+      </div>
+      <div class="detail-pct-wrap">
+        <div class="detail-pct-lbl">${t("winChance")}</div>
+        <div class="detail-pct">${fmtPct(probability)}</div>
+      </div>
+    </div>
+
+    <div class="detail-grid">
+      <div class="card">
+        <div class="section-label"><div class="bar" style="background:var(--blue)"></div><span class="lbl">${t("map")}</span></div>
+        <div class="map-wrap" id="mapWrap-${team.code}">
+          <div class="map-loading" id="mapLoading-${team.code}"><span class="map-spinner"></span></div>
+          <iframe
+            class="map-iframe"
+            src="${mapEmbedSrc}"
+            loading="lazy"
+            referrerpolicy="no-referrer-when-downgrade"
+            onload="document.getElementById('mapLoading-${team.code}')?.remove()"
+          ></iframe>
+        </div>
+        <div class="map-foot">
+          <span>${t("capital")}: ${esc(team.capital)}</span>
+          <a href="${mapOpenUrl}" target="_blank" rel="noopener noreferrer" class="map-open-link">${t("openInMaps")} ↗</a>
+        </div>
+      </div>
+      <div class="card">
+        <div class="section-label"><div class="bar" style="background:var(--green)"></div><span class="lbl">${t("overview")}</span></div>
+        <div class="stat-row"><span class="stat-row-lbl">${t("population")}</span><span class="stat-row-val">${fmtPop(team.pop)}</span></div>
+        <div class="stat-row"><span class="stat-row-lbl">${t("gdpCap")}</span><span class="stat-row-val">${fmtMoney(team.gdpCap)}</span></div>
+        <div class="stat-row"><span class="stat-row-lbl">${t("titles")}</span><span class="stat-row-val">${team.titles}</span></div>
+        <div class="stat-row"><span class="stat-row-lbl">${t("host")}</span><span class="stat-row-val">${team.host ? "✓" : "—"}</span></div>
+        <div class="stat-row"><span class="stat-row-lbl">${t("group")}</span><span class="stat-row-val">${groupMates.map((g) => FLAG_EMOJI[g.code]).join(" ")}</span></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="section-label"><div class="bar"></div><span class="lbl">${t("factorBreakdown")}</span></div>
+      ${factorHtml}
+      <div class="strength-total">
+        <span class="strength-total-lbl">${t("strengthScore")}</span>
+        <span class="strength-total-val">${factors.strength.toFixed(1)}</span>
+      </div>
+    </div>
+  `;
+
+  document.getElementById("backToTeams").addEventListener("click", () => {
+    State.selectedTeamCode = null; renderTeams();
+    applySectionStagger(document.getElementById("panel-teams"));
+  });
+}
+
+/* ============================================================================
+   RENDER: GROUPS TAB
+   ============================================================================ */
+let groupsActiveGroup = "A";
+
+function renderGroups() {
+  const pillsHtml = GROUP_LETTERS.map((g) =>
+    `<button class="group-pill ${g === groupsActiveGroup ? "active" : ""}" data-group="${g}">${g}</button>`
+  ).join("");
+
+  document.getElementById("panel-groups").innerHTML = `
+    <div class="group-pills" id="groupPills">${pillsHtml}</div>
+    <div class="group-table-wrap"><div class="group-table-inner" id="groupTableInner"></div></div>
+    <div class="legend-row"><span><span class="legend-swatch"></span>${t("qualified")}</span></div>
+  `;
+
+  function renderTable() {
+    const rows = LiveData.standings[groupsActiveGroup] || [];
+    const rowsHtml = rows.map((r, i) => {
+      const team = teamByCode(r.code); if (!team) return "";
+      const gd = r.gf - r.ga;
+      const name = State.lang === "id" ? team.name_id : team.name;
+      return `
+        <div class="gt-row ${i < 2 ? "qual" : ""}">
+          <span class="gt-rank ${i < 2 ? "qual" : ""}">${i + 1}</span>
+          <span class="gt-team"><span class="flag" style="font-size:17px;">${FLAG_EMOJI[team.code]}</span><span class="nm">${esc(name)}</span></span>
+          <span class="gt-cell">${r.p}</span><span class="gt-cell">${r.w}</span><span class="gt-cell">${r.d}</span><span class="gt-cell">${r.l}</span>
+          <span class="gt-cell">${gd > 0 ? "+" + gd : gd}</span>
+          <span class="gt-pts">${r.pts}</span>
+        </div>`;
+    }).join("");
+
+    document.getElementById("groupTableInner").innerHTML = `
+      <div class="gt-head">
+        <span>#</span><span>${t("team")}</span><span style="text-align:center">${t("matchesPlayed")}</span>
+        <span style="text-align:center">${t("win")}</span><span style="text-align:center">${t("draw")}</span>
+        <span style="text-align:center">${t("loss")}</span><span style="text-align:center">${t("goalDiff")}</span>
+        <span style="text-align:right">${t("points")}</span>
+      </div>
+      ${rows.length === 0 ? `<div class="empty-note">${t("noMatchesYet")}</div>` : rowsHtml}
+    `;
+  }
+  renderTable();
+
+  document.getElementById("groupPills").addEventListener("click", (e) => {
+    const btn = e.target.closest(".group-pill"); if (!btn) return;
+    groupsActiveGroup = btn.dataset.group;
+    document.querySelectorAll("#groupPills .group-pill").forEach((p) => p.classList.toggle("active", p === btn));
+    renderTable();
+  });
+}
+
+/* ============================================================================
+   RENDER: OVERALL TAB
+   ============================================================================ */
+function buildAiNarrative(champTeam, second, third) {
+  const lang = State.lang;
+  const cName = lang === "id" ? champTeam.name_id : champTeam.name;
+  const sName = lang === "id" ? second.name_id : second.name;
+  const tName = lang === "id" ? third.name_id : third.name;
+  if (lang === "id") {
+    return `Berdasarkan ${champTeam.fifaRank <= 5 ? "kombinasi ranking FIFA papan atas, " : ""}form di fase grup, dan simulasi ribuan kemungkinan skenario babak gugur, ${cName} tampil sebagai kandidat juara terkuat per hari ini. Keunggulan utamanya bertumpu pada Faktor Ranking FIFA dan Form Turnamen yang konsisten. ${sName} dan ${tName} membayangi sebagai penantang utama — selisih probabilitas antar tiga besar ini bisa berubah signifikan jika terjadi hasil mengejutkan (upset) di laga-laga mendatang, terutama saat babak gugur dimulai 28 Juni. Proyeksi ini otomatis diperbarui setiap kali skor pertandingan baru tercatat.`;
+  }
+  return `Drawing on ${champTeam.fifaRank <= 5 ? "a leading FIFA ranking, " : ""}group-stage form, and thousands of simulated knockout scenarios, ${cName} emerges as the strongest title candidate as of today. Its edge rests mainly on the FIFA Ranking and Tournament Form factors. ${sName} and ${tName} loom as the main challengers — the gap between this top three can shift sharply if an upset occurs in upcoming fixtures, especially once the knockout rounds begin on June 28. This projection refreshes automatically as new match results are recorded.`;
+}
+
+function renderOverall() {
+  const champ = teamByCode(State.probResults[0].code);
+  const second = teamByCode(State.probResults[1].code);
+  const third = teamByCode(State.probResults[2].code);
+  const narrative = buildAiNarrative(champ, second, third);
+  const champName = State.lang === "id" ? champ.name_id : champ.name;
+
+  const listHtml = State.probResults.map((r, i) => {
+    const team = teamByCode(r.code); if (!team) return "";
+    const name = State.lang === "id" ? team.name_id : team.name;
+    return `
+      <div class="overall-row">
+        <span class="overall-rank ${i < 3 ? "top3" : ""}">${i + 1}</span>
+        <span class="flag" style="font-size:17px;">${FLAG_EMOJI[team.code]}</span>
+        <span class="overall-name">${esc(name)}</span>
+        <span class="overall-pct ${i === 0 ? "top" : ""}">${fmtPct(r.probability)}</span>
+      </div>`;
+  }).join("");
+
+  document.getElementById("panel-overall").innerHTML = `
+    <div class="section-label"><div class="bar"></div><span class="lbl">${t("predictedChampion")}</span></div>
+    <div class="champion-card">
+      <div class="champion-flag">${FLAG_EMOJI[champ.code]}</div>
+      <div style="flex:1;min-width:200px;">
+        <div class="champion-eyebrow">🏆 ${t("predictedChampion").toUpperCase()}</div>
+        <div class="champion-name">${esc(champName)}</div>
+        <div class="champion-meta">#${champ.fifaRank} ${t("rankFifa")} · ${t("group")} ${champ.group}</div>
+      </div>
+      <div class="champion-pct-wrap">
+        <div class="champion-pct">${fmtPct(State.probResults[0].probability)}</div>
+        <div class="info-sub">${t("winChance")}</div>
+      </div>
+    </div>
+
+    <div class="ai-box">
+      <div class="section-label"><div class="bar" style="background:var(--blue)"></div><span class="lbl">🤖 ${t("aiAnalysis")}</span></div>
+      <p>${esc(narrative)}</p>
+    </div>
+
+    <div class="section-label"><div class="bar"></div><span class="lbl">${t("overallTitle")}</span></div>
+    <p class="section-sub">${t("overallSub")}</p>
+    <div class="list-card">${listHtml}</div>
+  `;
+}
+
+/* ============================================================================
+   RENDER: HIGHLIGHTS TAB
+   ============================================================================
+   Each videoId below was looked up directly against official FIFA/broadcaster
+   YouTube uploads (verified June 2026); the thumbnail is YouTube's own public
+   image endpoint (img.youtube.com/vi/<id>/hqdefault.jpg) for the top official
+   highlight result of that match, with no API key required. Click-to-play
+   keeps the page light (we don't load 6 video iframes at once).
+   ============================================================================ */
+const HIGHLIGHT_MATCHES = [
+  { a: "MEX", b: "RSA", score: "2–0", group: "A", videoId: "PmevGCkUtM8",
+    titleId: "Mexico 2–0 Afrika Selatan — Laga Pembuka", titleEn: "Mexico 2–0 South Africa — Opening Match" },
+  { a: "USA", b: "PAR", score: "4–1", group: "D", videoId: "BXD1_mhODBU",
+    titleId: "Amerika Serikat 4–1 Paraguay", titleEn: "United States 4–1 Paraguay" },
+  { a: "ARG", b: "ALG", score: "3–0", group: "J", videoId: "JH_WRKTCPK4",
+    titleId: "Argentina 3–0 Aljazair — Hat-trick Messi", titleEn: "Argentina 3–0 Algeria — Messi hat-trick" },
+  { a: "GER", b: "CUW", score: "7–1", group: "E", videoId: "B6-Z5ul2ccQ",
+    titleId: "Jerman 7–1 Curaçao", titleEn: "Germany 7–1 Curaçao" },
+  { a: "ENG", b: "CRO", score: "4–2", group: "L", videoId: "ynqGWHJPkuQ",
+    titleId: "Inggris 4–2 Kroasia", titleEn: "England 4–2 Croatia" },
+  { a: "BRA", b: "HAI", score: "3–0", group: "C", videoId: "BphiVajPsFc",
+    titleId: "Brasil 3–0 Haiti", titleEn: "Brazil 3–0 Haiti" },
+];
+
+function youtubeThumbUrl(videoId) {
+  return `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
+}
+
+function renderHighlights() {
+  const cardsHtml = HIGHLIGHT_MATCHES.map((m, i) => {
+    const teamA = teamByCode(m.a), teamB = teamByCode(m.b);
+    const title = State.lang === "id" ? m.titleId : m.titleEn;
+    const watchUrl = `https://www.youtube.com/watch?v=${m.videoId}`;
+    return `
+      <div class="hl-card">
+        <button class="hl-thumb-btn" data-video-idx="${i}" aria-label="${esc(t("watchYoutube"))}">
+          <img class="hl-thumb-img" src="${youtubeThumbUrl(m.videoId)}" alt="${esc(title)}" loading="lazy"
+               onerror="this.onerror=null;this.src='https://img.youtube.com/vi/${m.videoId}/mqdefault.jpg';">
+          <span class="hl-play-overlay"><span class="hl-play-icon">▶</span></span>
+        </button>
+        <div class="hl-body">
+          <div class="hl-score-row">
+            <span class="flag" style="font-size:18px;">${FLAG_EMOJI[m.a]}</span>
+            <span class="hl-score">${m.score}</span>
+            <span class="flag" style="font-size:18px;">${FLAG_EMOJI[m.b]}</span>
+            <span class="hl-group">${t("group")} ${m.group}</span>
+          </div>
+          <div class="hl-title">${esc(title)}</div>
+          <a class="hl-link" href="${watchUrl}" target="_blank" rel="noopener noreferrer">▶ ${t("watchYoutube")}</a>
+        </div>
+      </div>`;
+  }).join("");
+
+  document.getElementById("panel-highlights").innerHTML = `
+    <p class="section-sub" style="margin-top:-4px;">${t("highlightsSub")}</p>
+    <div class="highlights-grid">${cardsHtml}</div>
+  `;
+
+  document.querySelectorAll(".hl-thumb-btn").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const idx = Number(btn.dataset.videoIdx);
+      const m = HIGHLIGHT_MATCHES[idx];
+      const title = State.lang === "id" ? m.titleId : m.titleEn;
+      const iframe = document.createElement("iframe");
+      iframe.className = "hl-video-iframe";
+      iframe.src = `https://www.youtube.com/embed/${m.videoId}?autoplay=1`;
+      iframe.title = title;
+      iframe.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture";
+      iframe.allowFullscreen = true;
+      const wrap = document.createElement("div");
+      wrap.className = "hl-video-wrap";
+      wrap.appendChild(iframe);
+      btn.replaceWith(wrap);
+    });
+  });
+}
+
+/* ============================================================================
+   RENDER: RULES TAB
+   ============================================================================ */
+function renderRules() {
+  const rules = [
+    { tt: t("rule1t"), d: t("rule1") }, { tt: t("rule2t"), d: t("rule2") }, { tt: t("rule3t"), d: t("rule3") },
+    { tt: t("rule4t"), d: t("rule4") }, { tt: t("rule5t"), d: t("rule5") },
+  ];
+  const rulesHtml = rules.map((r, i) => `
+    <div class="rule-card">
+      <span class="rule-num">${String(i + 1).padStart(2, "0")}</span>
+      <div><div class="rule-title">${esc(r.tt)}</div><div class="rule-desc">${esc(r.d)}</div></div>
+    </div>`).join("");
+
+  document.getElementById("panel-rules").innerHTML = `
+    <p class="rules-intro">${t("rulesIntro")}</p>
+    ${rulesHtml}
+    <div class="source-notes">
+      <div>📚 ${t("sourceNote1")}</div>
+      <div style="margin-top:4px;">📊 ${t("sourceNote2")}</div>
+    </div>
+  `;
+}
+
+/* ============================================================================
+   RENDER: METHODOLOGY TAB
+   ============================================================================ */
+function renderMethod() {
+  const factorDefs = [
+    { label: t("rankFactor"), weight: FACTOR_WEIGHTS.rank, color: "var(--gold)", formula: "100/(1+(rank-1)/14) ± 8·(pts_norm-0.5)" },
+    { label: t("formFactor"), weight: FACTOR_WEIGHTS.form, color: "var(--green)", formula: "(PPG/3)×60 + clamp(15 + GD×2, 0, 40)" },
+    { label: t("histFactor"), weight: FACTOR_WEIGHTS.hist, color: "var(--blue)", formula: "10 + Σ 28×0.5^(age/20) per title" },
+    { label: t("econFactor"), weight: FACTOR_WEIGHTS.econ, color: "var(--blue)", formula: "ln(GDP per capita) / ln(100,000) × 100" },
+    { label: t("demoFactor"), weight: FACTOR_WEIGHTS.demo, color: "var(--blue)", formula: "ln(population) / ln(350) × 100" },
+    { label: t("luckFactor"), weight: FACTOR_WEIGHTS.luck, color: "var(--red)", formula: "N(μ=50, σ=22), re-rolled per simulation" },
+  ];
+  const rowsHtml = factorDefs.map((f) => `
+    <div class="factor-def-row">
+      <div>
+        <div class="factor-def-name"><span class="factor-dot" style="background:${f.color}"></span><span style="font-size:13px;color:var(--text);font-weight:600;">${f.label}</span></div>
+        <div class="factor-def-formula">${f.formula}</div>
+      </div>
+      <span class="factor-def-weight">${(f.weight * 100).toFixed(0)}%</span>
+    </div>`).join("");
+
+  document.getElementById("panel-method").innerHTML = `
+    <p class="method-p">${t("methodologyP1")}</p>
+    <p class="method-p2">${t("methodologyP2")}</p>
+    <div class="section-label"><div class="bar"></div><span class="lbl">${t("methodInputs")}</span></div>
+    <div class="factor-def-list">${rowsHtml}</div>
+    <div class="section-label"><div class="bar" style="background:var(--blue)"></div><span class="lbl">${t("methodFormula")}</span></div>
+    <div class="code-block">Strength(team) =
+  0.40 × RankFactor   (hybrid: ordinal rank + actual FIFA points nudge)
+  0.27 × FormFactor   (tournament form, widened saturation window)
+  0.08 × HistFactor   (titles, time-decayed: half-life 20 years)
+  0.025× EconFactor   (GDP per capita, log-scaled, minor tie-breaker only)
+  0.025× DemoFactor   (population, log-scaled, minor tie-breaker only)
+  0.20 × LuckFactor   (re-rolled per simulation)
+
+diff = (S_a - S_b) / 22
+host edge: diff += 0.18 only if exactly one side is a 2026 co-host (USA/MEX/CAN)
+λ_a = max(0.45, 1.35 + diff)
+λ_b = max(0.45, 1.35 - diff)
+Goals ~ Poisson(λ)</div>
+    <p class="method-foot">${t("poissonNote")}</p>
+    <p class="method-foot" style="margin-top:10px;">${t("revisionNote")}</p>
+    <p class="method-foot" style="margin-top:10px;">${t("age0_14")}</p>
+  `;
+}
+
+/* ============================================================================
+   RENDER: AI MATCH PREDICTOR — the signature orchestrated sequence
+   ============================================================================ */
+const QUICK_FIXTURES = [
+  ["ARG", "CPV"], ["BRA", "JPN"], ["SWE", "FRA"], ["CRO", "POR"], ["MAR", "NED"], ["USA", "BIH"], ["GER", "PAR"]
+];
+
+let PredictorState = { teamA: "ARG", teamB: "BRA", running: false, runToken: 0 };
+
+function renderPredictor() {
+  const optionsHtml = TEAMS_RAW
+    .slice()
+    .sort((a, b) => (State.lang === "id" ? a.name_id.localeCompare(b.name_id) : a.name.localeCompare(b.name)))
+    .map((tm) => `<option value="${tm.code}">${FLAG_EMOJI[tm.code]} ${esc(State.lang === "id" ? tm.name_id : tm.name)}</option>`)
+    .join("");
+
+  const quickHtml = QUICK_FIXTURES.map(([a, b]) => {
+    const ta = teamByCode(a), tb = teamByCode(b);
+    return `<button class="quick-fixture-btn" data-a="${a}" data-b="${b}">${FLAG_EMOJI[a]} ${ta.code} <span style="opacity:.75">vs</span> ${FLAG_EMOJI[b]} ${tb.code}</button>`;
+  }).join("");
+
+  document.getElementById("panel-predictor").innerHTML = `
+    <div class="section-label"><div class="bar"></div><span class="lbl">${t("predictorTitle")}</span></div>
+    <p class="predictor-intro">${t("predictorIntro")}</p>
+
+    <div class="matchup-picker">
+      <div class="picker-side">
+        <span class="picker-flag" id="pickerFlagA">${FLAG_EMOJI[PredictorState.teamA]}</span>
+        <select class="picker-select" id="pickerTeamA">${optionsHtml}</select>
+      </div>
+      <div class="picker-vs">
+        <div class="vs-badge">${t("vs")}</div>
+        <button class="predict-btn" id="runPredictBtn">▶ ${t("runPrediction")}</button>
+      </div>
+      <div class="picker-side">
+        <span class="picker-flag" id="pickerFlagB">${FLAG_EMOJI[PredictorState.teamB]}</span>
+        <select class="picker-select" id="pickerTeamB">${optionsHtml}</select>
+      </div>
+    </div>
+
+    <div class="quick-fixtures">${quickHtml}</div>
+
+    <div class="ai-stage" id="aiStage">
+      <div class="ai-stage-empty">
+        <span class="ic">🤖</span>
+        <div>${t("stageEmptyTitle")}</div>
+        <div style="font-size:11.5px;">${t("stageEmptySub")}</div>
+      </div>
+    </div>
+  `;
+
+  document.getElementById("pickerTeamA").value = PredictorState.teamA;
+  document.getElementById("pickerTeamB").value = PredictorState.teamB;
+
+  document.getElementById("pickerTeamA").addEventListener("change", (e) => {
+    PredictorState.teamA = e.target.value;
+    document.getElementById("pickerFlagA").textContent = FLAG_EMOJI[PredictorState.teamA];
+  });
+  document.getElementById("pickerTeamB").addEventListener("change", (e) => {
+    PredictorState.teamB = e.target.value;
+    document.getElementById("pickerFlagB").textContent = FLAG_EMOJI[PredictorState.teamB];
+  });
+  document.getElementById("runPredictBtn").addEventListener("click", () => runAiPrediction());
+  document.querySelectorAll(".quick-fixture-btn").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      PredictorState.teamA = btn.dataset.a; PredictorState.teamB = btn.dataset.b;
+      document.getElementById("pickerTeamA").value = PredictorState.teamA;
+      document.getElementById("pickerTeamB").value = PredictorState.teamB;
+      document.getElementById("pickerFlagA").textContent = FLAG_EMOJI[PredictorState.teamA];
+      document.getElementById("pickerFlagB").textContent = FLAG_EMOJI[PredictorState.teamB];
+      runAiPrediction();
+    });
+  });
+}
+
+function sleep(ms) { return new Promise((res) => setTimeout(res, ms)); }
+
+async function runAiPrediction() {
+  if (PredictorState.teamA === PredictorState.teamB) { showToast(t("pickTwo")); return; }
+  // Bump the token first: this invalidates any in-flight sequence (its awaited
+  // checks will see a stale token and bail out cleanly) so the user can always
+  // restart immediately without waiting for the previous run to finish.
+  PredictorState.running = true;
+  const myToken = ++PredictorState.runToken;
+  const btn = document.getElementById("runPredictBtn");
+  btn.disabled = true; btn.textContent = "⏳ " + t("running");
+
+  const teamA = teamByCode(PredictorState.teamA), teamB = teamByCode(PredictorState.teamB);
+  const nameA = State.lang === "id" ? teamA.name_id : teamA.name;
+  const nameB = State.lang === "id" ? teamB.name_id : teamB.name;
+  const stage = document.getElementById("aiStage");
+  stage.classList.add("scanning");
+
+  // Pre-compute the full result up front (deterministic given current daySeed),
+  // then reveal it progressively for the visual sequence.
+  const result = simulateSingleMatch(teamA, teamB, State.formLookup, State.daySeed, 1200);
+
+  stage.innerHTML = `
+    <div class="ai-thinking-line" id="thinkingLine"><span id="thinkingText"></span><span class="ai-thinking-cursor"></span></div>
+    <div class="ai-steps" id="aiSteps"></div>
+  `;
+  const stepsHost = document.getElementById("aiSteps");
+  const thinkingEl = document.getElementById("thinkingText");
+
+  async function setThinking(msg) {
+    if (PredictorState.runToken !== myToken) return;
+    thinkingEl.textContent = msg;
+  }
+
+  function addStep(html) {
+    const div = document.createElement("div");
+    div.className = "ai-step";
+    div.innerHTML = html;
+    stepsHost.appendChild(div);
+    requestAnimationFrame(() => div.classList.add("revealed"));
+    return div;
+  }
+  function markerHtml(state, icon) {
+    if (state === "active") return `<div class="step-marker active"><span class="step-spinner"></span></div>`;
+    if (state === "done") return `<div class="step-marker done">✓</div>`;
+    return `<div class="step-marker">${icon}</div>`;
+  }
+
+  /* ---- STEP 1: fetch base data ---- */
+  await setThinking(t("thinking1"));
+  let step1 = addStep(`
+    ${markerHtml("active", "1")}
+    <div>
+      <div class="step-title">${t("step1Title")}</div>
+      <div class="step-body">${t("rankFifa")}, ${t("formFactor").toLowerCase()}…</div>
+    </div>`);
+  await sleep(550);
+  if (PredictorState.runToken !== myToken) return;
+  await setThinking(t("thinking2"));
+  await sleep(500);
+  if (PredictorState.runToken !== myToken) return;
+
+  const fA = result.factorsA.formStats, fB = result.factorsB.formStats;
+  step1.innerHTML = `
+    ${markerHtml("done")}
+    <div>
+      <div class="step-title">${t("step1Title")}</div>
+      <div class="readout-grid">
+        <div class="readout-card">
+          <div class="readout-team">${FLAG_EMOJI[teamA.code]} ${esc(nameA)}</div>
+          <div class="readout-num">#${teamA.fifaRank}</div>
+          <div class="step-body">${t("rankFifa")} · ${fA.played} ${t("matchesPlayed").toLowerCase()} · ${fA.gf}-${fA.ga} GF-GA</div>
+        </div>
+        <div class="readout-card">
+          <div class="readout-team">${FLAG_EMOJI[teamB.code]} ${esc(nameB)}</div>
+          <div class="readout-num">#${teamB.fifaRank}</div>
+          <div class="step-body">${t("rankFifa")} · ${fB.played} ${t("matchesPlayed").toLowerCase()} · ${fB.gf}-${fB.ga} GF-GA</div>
+        </div>
+      </div>
+    </div>`;
+
+  /* ---- STEP 2: weighted factors ---- */
+  await setThinking(t("thinking3"));
+  let step2 = addStep(`
+    ${markerHtml("active", "2")}
+    <div><div class="step-title">${t("step2Title")}</div><div class="step-body" id="factorAnimBody"></div></div>`);
+  await sleep(450);
+  if (PredictorState.runToken !== myToken) return;
+
+  const factorDefs = [
+    { key: "rankFactor", label: t("rankFactor"), color: "var(--gold)" },
+    { key: "formFactor", label: t("formFactor"), color: "var(--green)" },
+    { key: "histFactor", label: t("histFactor"), color: "var(--blue)" },
+    { key: "econFactor", label: t("econFactor"), color: "var(--blue)" },
+    { key: "demoFactor", label: t("demoFactor"), color: "var(--blue)" },
+    { key: "luckFactor", label: t("luckFactor"), color: "var(--red)" },
+  ];
+  const factorBody = document.getElementById("factorAnimBody");
+  factorBody.innerHTML = `
+    <div class="dual-factor-block">
+      <div>
+        <div class="dual-factor-col-title">${FLAG_EMOJI[teamA.code]} ${esc(nameA)}</div>
+        <div id="factorColA"></div>
+      </div>
+      <div>
+        <div class="dual-factor-col-title">${FLAG_EMOJI[teamB.code]} ${esc(nameB)}</div>
+        <div id="factorColB"></div>
+      </div>
+    </div>`;
+  const colA = document.getElementById("factorColA"), colB = document.getElementById("factorColB");
+  factorDefs.forEach((f) => {
+    colA.innerHTML += `<div class="factor-anim-row"><span class="factor-anim-name">${f.label}</span><div class="factor-anim-track"><div class="factor-anim-fill" id="fillA-${f.key}" style="background:${f.color}"></div></div><span class="factor-anim-val" id="valA-${f.key}">0</span></div>`;
+    colB.innerHTML += `<div class="factor-anim-row"><span class="factor-anim-name">${f.label}</span><div class="factor-anim-track"><div class="factor-anim-fill" id="fillB-${f.key}" style="background:${f.color}"></div></div><span class="factor-anim-val" id="valB-${f.key}">0</span></div>`;
+  });
+  await setThinking(t("thinking4"));
+  for (const f of factorDefs) {
+    if (PredictorState.runToken !== myToken) return;
+    const vA = result.factorsA[f.key], vB = result.factorsB[f.key];
+    document.getElementById(`fillA-${f.key}`).style.width = vA + "%";
+    document.getElementById(`valA-${f.key}`).textContent = vA.toFixed(0);
+    document.getElementById(`fillB-${f.key}`).style.width = vB + "%";
+    document.getElementById(`valB-${f.key}`).textContent = vB.toFixed(0);
+    await sleep(220);
+  }
+  step2.querySelector(".step-marker").outerHTML = markerHtml("done");
+
+  /* ---- STEP 3: Strength Score formula build-up ---- */
+  await setThinking(t("thinking5"));
+  let step3 = addStep(`
+    ${markerHtml("active", "3")}
+    <div><div class="step-title">${t("step3Title")}</div><div class="step-body" id="formulaBody"></div></div>`);
+  await sleep(300);
+  if (PredictorState.runToken !== myToken) return;
+
+  const formulaBody = document.getElementById("formulaBody");
+  formulaBody.innerHTML = `
+    <div class="dual-factor-block">
+      <div id="formulaColA"></div>
+      <div id="formulaColB"></div>
+    </div>`;
+  const fcA = document.getElementById("formulaColA"), fcB = document.getElementById("formulaColB");
+  function formulaLinesHtml(prefix) {
+    return factorDefs.map((f) => `<div class="formula-line" id="${prefix}-line-${f.key}"><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:78px;">${f.label}</span><span class="term-val">—</span></div>`).join("")
+      + `<div class="formula-total"><span class="formula-total-lbl">${t("strengthScore")}</span><span class="formula-total-val" id="${prefix}-total" style="color:var(--gold)">0.0</span></div>`;
+  }
+  fcA.innerHTML = formulaLinesHtml("fmA");
+  fcB.innerHTML = formulaLinesHtml("fmB");
+
+  for (const f of factorDefs) {
+    if (PredictorState.runToken !== myToken) return;
+    const lineA = document.getElementById(`fmA-line-${f.key}`), lineB = document.getElementById(`fmB-line-${f.key}`);
+    const wt = FACTOR_WEIGHTS[f.key.replace("Factor", "")];
+    lineA.querySelector(".term-val").textContent = `${result.factorsA[f.key].toFixed(1)} × ${wt}`;
+    lineB.querySelector(".term-val").textContent = `${result.factorsB[f.key].toFixed(1)} × ${wt}`;
+    lineA.classList.add("lit"); lineB.classList.add("lit");
+    await sleep(160);
+  }
+  document.getElementById("fmA-total").textContent = result.factorsA.strength.toFixed(1);
+  document.getElementById("fmB-total").textContent = result.factorsB.strength.toFixed(1);
+  step3.querySelector(".step-marker").outerHTML = markerHtml("done");
+
+  /* ---- STEP 4: Poisson goal model ---- */
+  await setThinking(t("thinking6"));
+  let step4 = addStep(`
+    ${markerHtml("active", "4")}
+    <div><div class="step-title">${t("step4Title")}</div><div class="step-body" id="poissonBody"></div></div>`);
+  await sleep(450);
+  if (PredictorState.runToken !== myToken) return;
+
+  const poissonBody = document.getElementById("poissonBody");
+  function poissonBarsHtml(prefix, lam) {
+    const ks = [0, 1, 2, 3, 4, 5];
+    const pmfs = ks.map((k) => poissonPMF(lam, k));
+    const maxP = Math.max(...pmfs);
+    const bars = ks.map((k, i) => `<div class="poisson-bar" id="${prefix}-bar-${k}" style="height:2px;background:var(--blue);"></div>`).join("");
+    const labels = ks.map((k) => `<span>${k}</span>`).join("");
+    return { html: `<div class="poisson-bars">${bars}</div><div class="poisson-labels">${labels}</div>`, pmfs, maxP };
+  }
+  const pA = poissonBarsHtml("pA", result.lamA), pB = poissonBarsHtml("pB", result.lamB);
+  poissonBody.innerHTML = `
+    <div class="poisson-wrap">
+      <div>
+        <div class="poisson-col-title">${FLAG_EMOJI[teamA.code]} ${esc(nameA)}</div>
+        ${pA.html}
+        <div class="lambda-readout">λ = ${result.lamA.toFixed(2)} ${State.lang === "id" ? "gol/laga" : "goals/match"}</div>
+      </div>
+      <div>
+        <div class="poisson-col-title">${FLAG_EMOJI[teamB.code]} ${esc(nameB)}</div>
+        ${pB.html}
+        <div class="lambda-readout">λ = ${result.lamB.toFixed(2)}</div>
+      </div>
+    </div>`;
+  await sleep(120);
+  [0, 1, 2, 3, 4, 5].forEach((k, i) => {
+    setTimeout(() => {
+      if (PredictorState.runToken !== myToken) return;
+      const hA = Math.max(2, (pA.pmfs[i] / pA.maxP) * 64), hB = Math.max(2, (pB.pmfs[i] / pB.maxP) * 64);
+      const elA = document.getElementById(`pA-bar-${k}`), elB = document.getElementById(`pB-bar-${k}`);
+      if (elA) elA.style.height = hA + "px";
+      if (elB) elB.style.height = hB + "px";
+    }, i * 90);
+  });
+  await sleep(700);
+  if (PredictorState.runToken !== myToken) return;
+  step4.querySelector(".step-marker").outerHTML = markerHtml("done");
+
+  /* ---- STEP 5: run mini Monte Carlo ---- */
+  await setThinking(t("thinking7"));
+  let step5 = addStep(`
+    ${markerHtml("active", "5")}
+    <div><div class="step-title">${t("step5Title")}</div><div class="step-body" id="simBody"></div></div>`);
+  await sleep(250);
+  if (PredictorState.runToken !== myToken) return;
+
+  const simBody = document.getElementById("simBody");
+  simBody.innerHTML = `
+    <div class="sim-progress-wrap">
+      <div class="sim-progress-track"><div class="sim-progress-fill" id="simFill"></div></div>
+      <div class="sim-progress-text"><span id="simCount">0</span><span>${result.runs.toLocaleString("en-US")} ${t("simulations")}</span></div>
+    </div>
+    <div class="outcome-bars" id="outcomeBars">
+      <div class="outcome-seg" id="segA" style="background:var(--gold);"></div>
+      <div class="outcome-seg" id="segD" style="background:var(--text-faint);"></div>
+      <div class="outcome-seg" id="segB" style="background:var(--blue);"></div>
+    </div>
+    <div class="outcome-legend">
+      <span>${esc(nameA)}</span><span>${t("draw")}</span><span>${esc(nameB)}</span>
+    </div>`;
+
+  const simFill = document.getElementById("simFill"), simCount = document.getElementById("simCount");
+  const totalRuns = result.runs;
+  const animFrames = 24;
+  for (let i = 1; i <= animFrames; i++) {
+    if (PredictorState.runToken !== myToken) return;
+    const frac = i / animFrames;
+    simFill.style.width = (frac * 100) + "%";
+    simCount.textContent = Math.round(frac * totalRuns).toLocaleString("en-US");
+    await sleep(28);
+  }
+  await sleep(150);
+  if (PredictorState.runToken !== myToken) return;
+  document.getElementById("segA").style.width = (result.pWinA * 100) + "%";
+  document.getElementById("segA").textContent = result.pWinA > 0.12 ? fmtPct(result.pWinA) : "";
+  document.getElementById("segD").style.width = (result.pDraw * 100) + "%";
+  document.getElementById("segD").textContent = result.pDraw > 0.12 ? fmtPct(result.pDraw) : "";
+  document.getElementById("segB").style.width = (result.pWinB * 100) + "%";
+  document.getElementById("segB").textContent = result.pWinB > 0.12 ? fmtPct(result.pWinB) : "";
+  await sleep(500);
+  if (PredictorState.runToken !== myToken) return;
+  step5.querySelector(".step-marker").outerHTML = markerHtml("done");
+
+  /* ---- STEP 6: final verdict ---- */
+  await setThinking(t("thinking8"));
+  await sleep(350);
+  if (PredictorState.runToken !== myToken) return;
+
+  const winnerName = result.pWinA >= result.pWinB ? nameA : nameB;
+  const gapAB = Math.abs(result.pWinA - result.pWinB);
+  let verdictLine, confLabel;
+  if (gapAB < 0.12) { verdictLine = t("closeMatch"); confLabel = t("confLow"); }
+  else if (gapAB < 0.35) { verdictLine = `${winnerName} ${t("clearFavorite")}`; confLabel = t("confMed"); }
+  else { verdictLine = `${winnerName} ${t("strongFavorite")}`; confLabel = t("confHigh"); }
+
+  let verdict = addStep(`
+    ${markerHtml("done")}
+    <div><div class="step-title">${t("step6Title")}</div></div>`);
+  thinkingEl.parentElement.style.display = "none";
+
+  const verdictCard = document.createElement("div");
+  verdictCard.className = "verdict-card";
+  verdictCard.innerHTML = `
+    <div class="verdict-eyebrow">🤖 ${t("aiVerdictEyebrow")}</div>
+    <div class="verdict-main">
+      <div class="verdict-flags">${FLAG_EMOJI[teamA.code]} <span style="font-size:14px;color:var(--text-mute);">vs</span> ${FLAG_EMOJI[teamB.code]}</div>
+      <div class="verdict-score">${result.bestScore}</div>
+      <div class="verdict-detail">
+        <div class="verdict-winner">${esc(verdictLine)}</div>
+        <div class="verdict-conf">${t("mostLikelyScore")} · ${(result.bestScoreShare*100).toFixed(1)}% ${t("simOf")} ${result.runs.toLocaleString("en-US")} ${t("simulations")} · ${t("confidenceLevel")}: <b>${confLabel}</b></div>
+      </div>
+    </div>
+  `;
+  stage.appendChild(verdictCard);
+  requestAnimationFrame(() => verdictCard.classList.add("show"));
+
+  btn.disabled = false; btn.textContent = "🔁 " + t("rerun");
+  PredictorState.running = false;
+}
+
+/* ============================================================================
+   APP SHELL — header, tabs, init
+   ============================================================================ */
+const TAB_RENDERERS = {
+  dashboard: renderDashboard,
+  predictor: renderPredictor,
+  overall: renderOverall,
+  teams: renderTeams,
+  groups: renderGroups,
+  highlights: renderHighlights,
+  rules: renderRules,
+  method: renderMethod,
+};
+
+function applyI18nStatic() {
+  document.querySelectorAll("[data-i18n]").forEach((el) => {
+    const key = el.getAttribute("data-i18n");
+    el.textContent = t(key);
+  });
+  document.getElementById("langBtn").textContent = State.lang === "id" ? "EN" : "ID";
+  document.title = t("appName") + " — " + t("appSub");
+}
+
+function renderActivePanel() {
+  const fn = TAB_RENDERERS[State.activeTab];
+  if (fn) fn();
+  const activePanel = document.getElementById("panel-" + State.activeTab);
+  applySectionStagger(activePanel);
+}
+
+function switchTab(tabKey) {
+  if (State.activeTab === tabKey) return;
+  State.activeTab = tabKey;
+  State.selectedTeamCode = null;
+  document.querySelectorAll(".tab").forEach((b) => b.classList.toggle("active", b.dataset.tab === tabKey));
+  document.querySelectorAll(".panel").forEach((p) => p.classList.toggle("active", p.id === "panel-" + tabKey));
+  renderActivePanel();
+}
+
+function updateSyncUI() {
+  const dot = document.getElementById("liveDot");
+  dot.classList.toggle("on", LiveData.status === "ok");
+  const ftr = document.getElementById("ftrSync");
+  if (LiveData.status === "ok" && LiveData.lastSync) {
+    ftr.textContent = `${t("lastSync")}: ${LiveData.lastSync.toLocaleTimeString()}`;
+  } else if (LiveData.status === "loading") {
+    ftr.textContent = t("syncing");
+  } else {
+    ftr.textContent = t("syncFail");
+  }
+}
+
+function fullRerender() {
+  recomputeDerived();
+  applyI18nStatic();
+  updateSyncUI();
+  renderActivePanel();
+}
+
+function init() {
+  // Boot-in entrance: let the CSS animation play once, then drop the class
+  // so it never accidentally re-triggers (e.g. on later layout reflows).
+  const appEl = document.getElementById("app");
+  const hdrEl = document.getElementById("hdr");
+  [appEl, hdrEl].forEach((el) => {
+    if (!el) return;
+    el.addEventListener("animationend", () => el.classList.remove("boot-in"), { once: true });
+  });
+
+  // tab navigation
+  document.getElementById("tabs").addEventListener("click", (e) => {
+    const btn = e.target.closest(".tab"); if (!btn) return;
+    switchTab(btn.dataset.tab);
+  });
+
+  // language toggle
+  document.getElementById("langBtn").addEventListener("click", () => {
+    State.lang = State.lang === "id" ? "en" : "id";
+    fullRerender();
+  });
+
+  // delegated click for "open team detail" buttons rendered inside panels
+  document.getElementById("main").addEventListener("click", (e) => {
+    const openBtn = e.target.closest("[data-action='open-team']");
+    if (openBtn) {
+      State.selectedTeamCode = openBtn.dataset.team;
+      switchTab("teams");
+      // switchTab no-ops if already on teams tab, so render explicitly too
+      State.activeTab = "teams";
+      document.querySelectorAll(".tab").forEach((b) => b.classList.toggle("active", b.dataset.tab === "teams"));
+      document.querySelectorAll(".panel").forEach((p) => p.classList.toggle("active", p.id === "panel-teams"));
+      renderTeams();
+      applySectionStagger(document.getElementById("panel-teams"));
+    }
+  });
+
+  // live data subscription: whenever sync completes, recompute odds + refresh visible tab
+  LiveData.onChange(() => {
+    recomputeDerived();
+    updateSyncUI();
+    if (State.activeTab === "dashboard" || State.activeTab === "overall" || State.activeTab === "groups" ||
+        (State.activeTab === "teams" && State.selectedTeamCode)) {
+      renderActivePanel();
+    }
+    if (LiveData.status === "ok") {
+      showToast(State.lang === "id" ? "Data live tersinkron — peluang diperbarui." : "Live data synced — odds updated.");
+    }
+  });
+
+  recomputeDerived();
+  applyI18nStatic();
+  updateSyncUI();
+  renderActivePanel();
+
+  LiveData.sync();
+}
+
+document.addEventListener("DOMContentLoaded", init);
+
+</script>
+</body>
+</html>
