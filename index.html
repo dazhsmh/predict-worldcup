@@ -379,7 +379,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{
 @keyframes toastIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
 
 /* ============================================================================
-   AI MATCH PREDICTOR — signature element: an orchestrated "thinking" sequence
+   MATCH PREDICTOR — signature element: an orchestrated "thinking" sequence
    that visualizes how the algorithm scores a single fixture end-to-end.
    ============================================================================ */
 .predictor-intro{font-size:13px;color:var(--text-mute);line-height:1.6;margin-bottom:18px;max-width:640px;}
@@ -599,7 +599,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{
   .detail-pct-wrap{margin-left:0;text-align:left;flex-basis:100%;}
   .detail-pct{font-size:26px;}
 
-  /* AI Match Predictor: the picker is the one place a 3-column grid
+  /* Match Predictor: the picker is the one place a 3-column grid
      (flag+select / VS+button / flag+select) cannot fit at narrow widths
      because "Jalankan Prediksi / Run Prediction" needs real room. Stack it
      vertically -- team A, then the VS+button, then team B. */
@@ -612,7 +612,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{
   .vs-badge{margin:0 auto;}
   .quick-fixture-btn{font-size:11px;padding:6px 10px;}
 
-  /* AI step readouts / factor bars: narrower label columns so the numeric
+  /* step readouts / factor bars: narrower label columns so the numeric
      value never gets pushed past the edge of the card */
   .readout-grid{grid-template-columns:1fr;gap:8px;}
   .dual-factor-block{grid-template-columns:1fr;gap:14px;}
@@ -698,7 +698,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{
     </div>
     <nav class="tabs" id="tabs">
       <button class="tab active" data-tab="dashboard"><span class="tab-ic">📡</span><span data-i18n="tabDashboard">Dasbor</span></button>
-      <button class="tab" data-tab="predictor"><span class="tab-ic">🤖</span><span data-i18n="tabPredictor">AI Prediktor</span></button>
+      <button class="tab" data-tab="predictor"><span class="tab-ic">🤖</span><span data-i18n="tabPredictor">Prediktor</span></button>
       <button class="tab" data-tab="overall"><span class="tab-ic">🏆</span><span data-i18n="tabOverall">Klasemen Akhir</span></button>
       <button class="tab" data-tab="teams"><span class="tab-ic">🌎</span><span data-i18n="tabTeams">Negara</span></button>
       <button class="tab" data-tab="groups"><span class="tab-ic">📋</span><span data-i18n="tabGroups">Klasemen Grup</span></button>
@@ -757,7 +757,7 @@ const FLAG_EMOJI = {
 const STR = {
   id: {
     appName: "Peluang Juara", appSub: "Piala Dunia FIFA 2026™",
-    tabDashboard: "Dasbor", tabPredictor: "AI Prediktor", tabTeams: "Negara", tabGroups: "Klasemen Grup",
+    tabDashboard: "Dasbor", tabPredictor: "Prediktor", tabTeams: "Negara", tabGroups: "Klasemen Grup",
     tabOverall: "Klasemen Akhir", tabHighlights: "Highlight", tabRules: "Peraturan", tabMethod: "Metodologi",
     live: "LANGSUNG", lastSync: "Sinkron terakhir", syncing: "Menyinkronkan data live…",
     syncOk: "Tersambung ke data live", syncFail: "Memakai data dasar — sinkron live gagal",
@@ -772,13 +772,13 @@ const STR = {
     matchesPlayed: "Main", win: "M", draw: "S", loss: "K", goalDiff: "SG", points: "Poin", qualified: "Lolos",
     overallTitle: "Klasemen Akhir & Prediksi Juara",
     overallSub: "Diurutkan berdasarkan probabilitas algoritma untuk menjadi juara",
-    predictedChampion: "Prediksi Juara — Algoritma & AI",
-    aiAnalysis: "Analisis Kecerdasan Buatan",
+    predictedChampion: "Prediksi Juara",
+    aiAnalysis: "Analisis Sistem",
     highlightsTitle: "Highlight Pertandingan", highlightsSub: "Video resmi dari YouTube",
     watchYoutube: "Tonton di YouTube", searchYoutube: "Cari highlight di YouTube",
     methodTitle: "Metodologi Algoritma",
     backToList: "Kembali",
-    footerNote: "Proyeksi statistik dari simulasi, bukan jaminan hasil. Sepak bola tetap indah karena ketidakpastiannya.",
+    footerNote: "Proyeksi statistik dari simulasi, bukan jaminan hasil. Sepak bola tetap indah karena ketidakpastiannya :>.",
     team: "Negara",
     noMatchesYet: "Belum ada pertandingan dimainkan di grup ini.",
     allGroups: "Semua Grup",
@@ -802,19 +802,19 @@ const STR = {
     age0_14: "Catatan: faktor demografi memodelkan potensi talenta dari skala populasi, bukan prediksi langsung performa tim.",
     revisionNote: "Revisi terbaru: bobot Ekonomi dan Demografi dipangkas drastis (dari 20% total menjadi 5%) agar negara kaya namun lemah secara sepak bola tidak diuntungkan secara tidak adil. Faktor Ranking FIFA kini lebih responsif (memperhitungkan poin aktual, bukan hanya posisi), Faktor Sejarah kini meluruh seiring waktu (gelar 2022 lebih bernilai dari gelar 1966), dan keuntungan tuan rumah hanya berlaku saat salah satu tim benar adalah negara penyelenggara (AS/Meksiko/Kanada).",
     rulesTitle: "Peraturan & Format Turnamen",
-    // AI Predictor tab
-    predictorTitle: "AI Prediktor Pertandingan",
-    predictorIntro: "Pilih dua negara untuk melihat secara langkah-demi-langkah bagaimana algoritma menghitung peluang menang — mulai dari data mentah, faktor tertimbang, model gol Poisson, hingga ribuan simulasi mini.",
+    // Predictor tab
+    predictorTitle: "Prediktor Pertandingan",
+    predictorIntro: "Pilih dua negara untuk melihat secara langkah-demi-langkah bagaimana algoritma menghitung peluang menang mulai dari data mentah, faktor tertimbang, model gol Poisson, hingga ribuan simulasi mini.",
     selectTeamA: "Negara A", selectTeamB: "Negara B", vs: "VS",
     runPrediction: "Jalankan Prediksi", running: "Memproses…",
     quickFixtures: "Pertandingan Mendatang",
-    stageEmptyTitle: "Pilih dua negara untuk mulai", stageEmptySub: "AI akan menampilkan visual proses analisisnya secara langsung di sini",
+    stageEmptyTitle: "Pilih dua negara untuk mulai", stageEmptySub: "Kami akan menampilkan visual proses analisisnya secara langsung di sini",
     step1Title: "Mengambil data dasar kedua negara",
     step2Title: "Menghitung faktor tertimbang",
     step3Title: "Menyusun Skor Kekuatan",
     step4Title: "Memodelkan ekspektasi gol (Poisson)",
     step5Title: "Menjalankan simulasi pertandingan",
-    step6Title: "Verdict akhir AI",
+    step6Title: "Verdict akhir sistem",
     thinking1: "Mengakses ranking FIFA terkini…",
     thinking2: "Membaca form 2 laga terakhir dari data live…",
     thinking3: "Menormalisasi indikator ekonomi & demografi (skala log)…",
@@ -826,7 +826,7 @@ const STR = {
     mostLikelyScore: "Skor Paling Mungkin",
     confidenceLevel: "Tingkat Keyakinan",
     winProb: "Peluang Menang", drawProbLbl: "Peluang Seri",
-    aiVerdictEyebrow: "VERDICT AI",
+    aiVerdictEyebrow: "VERDICT SYSTEM",
     simOf: "dari", simulations: "simulasi",
     closeMatch: "Pertandingan ketat — selisih kekuatan tipis.",
     clearFavorite: "diunggulkan cukup jelas oleh algoritma.",
@@ -838,7 +838,7 @@ const STR = {
   },
   en: {
     appName: "Title Odds", appSub: "FIFA World Cup 2026™",
-    tabDashboard: "Dashboard", tabPredictor: "AI Predictor", tabTeams: "Teams", tabGroups: "Group Tables",
+    tabDashboard: "Dashboard", tabPredictor: "Predictor", tabTeams: "Teams", tabGroups: "Group Tables",
     tabOverall: "Final Standings", tabHighlights: "Highlights", tabRules: "Rules", tabMethod: "Methodology",
     live: "LIVE", lastSync: "Last sync", syncing: "Syncing live data…",
     syncOk: "Connected to live data", syncFail: "Using base dataset — live sync failed",
@@ -853,8 +853,8 @@ const STR = {
     matchesPlayed: "Played", win: "W", draw: "D", loss: "L", goalDiff: "GD", points: "Pts", qualified: "Qualified",
     overallTitle: "Final Standings & Title Prediction",
     overallSub: "Ranked by the algorithm's probability of becoming champion",
-    predictedChampion: "Predicted Champion — Algorithm & AI",
-    aiAnalysis: "AI Analysis",
+    predictedChampion: "Predicted Champion",
+    aiAnalysis: "System Analysis",
     highlightsTitle: "Match Highlights", highlightsSub: "Official videos from YouTube",
     watchYoutube: "Watch on YouTube", searchYoutube: "Search highlights on YouTube",
     methodTitle: "Algorithm Methodology",
@@ -883,18 +883,18 @@ const STR = {
     age0_14: "Note: the demographic factor models talent-pool potential from population scale, not a direct performance prediction.",
     revisionNote: "Latest revision: Economy and Demographics weights were cut sharply (from 20% combined to 5%) so wealthy-but-weak footballing nations no longer get an unfair boost. The FIFA Ranking factor is now more responsive (accounting for actual points, not just position), the History factor now decays over time (a 2022 title counts more than a 1966 one), and a host-nation edge only applies when one of the two teams is actually a tournament host (USA/Mexico/Canada).",
     rulesTitle: "Rules & Tournament Format",
-    predictorTitle: "AI Match Predictor",
-    predictorIntro: "Pick two countries to watch, step by step, exactly how the algorithm computes win odds — from raw data, to weighted factors, to a Poisson goal model, to thousands of mini-simulations.",
+    predictorTitle: "Match Predictor",
+    predictorIntro: "Pick two countries to watch, step by step, exactly how the algorithm computes win odds from raw data, to weighted factors, to a Poisson goal model, to thousands of mini-simulations.",
     selectTeamA: "Team A", selectTeamB: "Team B", vs: "VS",
     runPrediction: "Run Prediction", running: "Processing…",
     quickFixtures: "Upcoming Fixtures",
-    stageEmptyTitle: "Pick two countries to begin", stageEmptySub: "The AI will render its live analysis process right here",
+    stageEmptyTitle: "Pick two countries to begin", stageEmptySub: "We will render its live analysis process right here",
     step1Title: "Fetching base data for both nations",
     step2Title: "Computing weighted factors",
     step3Title: "Assembling the Strength Score",
     step4Title: "Modeling expected goals (Poisson)",
     step5Title: "Running match simulations",
-    step6Title: "Final AI verdict",
+    step6Title: "Final system verdict",
     thinking1: "Accessing current FIFA rankings…",
     thinking2: "Reading last 2 matches from live data…",
     thinking3: "Normalizing economic & demographic indicators (log scale)…",
@@ -906,7 +906,7 @@ const STR = {
     mostLikelyScore: "Most Likely Score",
     confidenceLevel: "Confidence Level",
     winProb: "Win Probability", drawProbLbl: "Draw Probability",
-    aiVerdictEyebrow: "AI VERDICT",
+    aiVerdictEyebrow: "SYSTEM VERDICT",
     simOf: "of", simulations: "simulations",
     closeMatch: "Tight matchup — the strength gap is thin.",
     clearFavorite: "is a fairly clear favorite per the algorithm.",
@@ -1149,7 +1149,7 @@ function runMonteCarlo(teams, standingsByGroup, daySeed, runs) {
   return results;
 }
 
-// Single-match simulator used by the AI Predictor (independent of tournament context)
+// Single-match simulator used by the Predictor (independent of tournament context)
 function simulateSingleMatch(teamA, teamB, formLookup, daySeed, runs) {
   const rnd = mulberry32(hashStr(daySeed + "::match::" + teamA.code + teamB.code));
   let winsA = 0, winsB = 0, draws = 0;
@@ -1528,7 +1528,7 @@ function renderTeamDetail(code) {
     <div class="factor-row">
       <div class="factor-head">
         <span class="factor-name">${f.label}</span>
-        <span class="factor-val">${f.value.toFixed(1)} <span class="wt">· ${t("weightLabel")} ${(f.weight * 100).toFixed(0)}%</span></span>
+        <span class="factor-val">${f.value.toFixed(1)} <span class="wt">· ${t("weightLabel")} ${(f.weight * 100).toFixed(1)}%</span></span>
       </div>
       <div class="sparkbar"><div class="sparkbar-fill" style="width:${f.value}%;background:${f.color}"></div></div>
     </div>`).join("");
@@ -1821,7 +1821,7 @@ function renderMethod() {
         <div class="factor-def-name"><span class="factor-dot" style="background:${f.color}"></span><span style="font-size:13px;color:var(--text);font-weight:600;">${f.label}</span></div>
         <div class="factor-def-formula">${f.formula}</div>
       </div>
-      <span class="factor-def-weight">${(f.weight * 100).toFixed(0)}%</span>
+      <span class="factor-def-weight">${(f.weight * 100).toFixed(1)}%</span>
     </div>`).join("");
 
   document.getElementById("panel-method").innerHTML = `
@@ -1850,7 +1850,7 @@ Goals ~ Poisson(λ)</div>
 }
 
 /* ============================================================================
-   RENDER: AI MATCH PREDICTOR — the signature orchestrated sequence
+   RENDER: MATCH PREDICTOR — the signature orchestrated sequence
    ============================================================================ */
 const QUICK_FIXTURES = [
   ["ARG", "CPV"], ["BRA", "JPN"], ["SWE", "FRA"], ["CRO", "POR"], ["MAR", "NED"], ["USA", "BIH"], ["GER", "PAR"]
