@@ -673,10 +673,173 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{
   .factor-anim-name{font-size:9px;}
 }
 
+/* ---------------- LOADING / PREVIEW OVERLAY ---------------- */
+#loadingOverlay{
+  position:fixed;inset:0;z-index:200;background:var(--bg);
+  overflow:hidden;transition:opacity .4s ease, visibility .4s ease;
+}
+#loadingOverlay.hidden{opacity:0;visibility:hidden;pointer-events:none;}
+.loading-shell{max-width:1080px;margin:0 auto;height:100%;display:flex;flex-direction:column;}
+
+/* fake header, meniru .hdr */
+.loading-hdr{border-bottom:1px solid var(--line);background:var(--bg-panel);flex-shrink:0;}
+.loading-hdr-inner{padding:14px 18px;display:flex;align-items:center;gap:14px;}
+.loading-brand{display:flex;align-items:center;gap:12px;flex:1;min-width:0;}
+.loading-brand-name{font-size:16.5px;font-weight:800;font-family:var(--ff-display);color:var(--text);letter-spacing:-.01em;}
+.loading-brand-sub{font-size:11px;color:var(--text-mute);margin-top:1px;}
+.loading-lang-skel{width:42px;height:28px;border-radius:8px;}
+
+/* fake tabs, meniru .tabs/.tab */
+.loading-tabs{display:flex;gap:8px;padding:0 18px 10px;overflow:hidden;}
+.loading-tab-skel{width:60px;height:15px;border-radius:6px;flex-shrink:0;opacity:.5;}
+.loading-tab-skel.active{
+  opacity:1;width:76px;
+  background:linear-gradient(90deg,var(--gold-soft) 25%,rgba(212,167,44,.4) 50%,var(--gold-soft) 75%);
+  background-size:200% 100%;animation:skeletonShine 1.4s ease-in-out infinite;
+}
+
+/* fake main content area */
+.loading-main{flex:1;overflow:hidden;padding:20px 18px;}
+
+/* fake stat strip, meniru .stat-strip */
+.loading-stat-strip{
+  display:grid;grid-template-columns:repeat(4,1fr);gap:1px;
+  background:var(--line);border-radius:12px;overflow:hidden;margin-bottom:22px;border:1px solid var(--line);
+}
+.loading-stat-cell{background:var(--bg-panel);padding:16px 18px;}
+.loading-stat-val{width:38px;height:24px;border-radius:5px;margin-bottom:8px;}
+.loading-stat-lbl{width:70%;height:9px;border-radius:4px;}
+
+/* fake section label, meniru .section-label */
+.loading-section-label{display:flex;align-items:center;gap:8px;margin-bottom:14px;}
+.loading-section-label .bar{width:3px;height:14px;border-radius:2px;background:var(--gold);}
+.loading-label-skel{width:120px;height:10px;border-radius:4px;}
+
+/* fake board, meniru .board/.board-row */
+.loading-board{background:var(--bg-panel);border:1px solid var(--line);border-radius:14px;padding:6px 18px;}
+.loading-board-row{
+  display:grid;grid-template-columns:28px 30px 1fr auto;align-items:center;gap:12px;
+  padding:12px 4px;border-bottom:1px solid var(--line-soft);
+}
+.loading-board-row:last-child{border-bottom:none;}
+.loading-rank-skel{width:18px;height:12px;border-radius:4px;}
+.loading-flag-skel{width:22px;height:22px;border-radius:50%;}
+.loading-row-name-skel{height:11px;border-radius:4px;margin-bottom:8px;}
+.loading-row-bar-skel{height:5px;border-radius:3px;}
+.loading-row-pct-skel{width:52px;height:15px;border-radius:4px;justify-self:end;}
+
+/* fake status bar di bawah, meniru footer sync info */
+.loading-status-wrap{
+  flex-shrink:0;display:flex;align-items:center;justify-content:center;gap:10px;
+  padding:14px 18px 20px;border-top:1px solid var(--line);
+}
+.loading-spinner{
+  width:16px;height:16px;border-radius:50%;border:2.5px solid var(--line);
+  border-top-color:var(--gold);animation:spin .8s linear infinite;flex-shrink:0;
+}
+.loading-status{font-family:var(--ff-mono);font-size:11px;color:var(--text-faint);}
+
+.skeleton{
+  background:linear-gradient(90deg,var(--line-soft) 25%,var(--line) 50%,var(--line-soft) 75%);
+  background-size:200% 100%;animation:skeletonShine 1.4s ease-in-out infinite;
+}
+@keyframes skeletonShine{0%{background-position:200% 0;}100%{background-position:-200% 0;}}
+
+@media (max-width:600px){
+  .loading-hdr-inner{padding:12px 14px;}
+  .loading-main{padding:16px 12px;}
+  .loading-stat-strip{grid-template-columns:repeat(2,1fr);}
+  .loading-tabs{padding:0 12px 10px;}
+  .loading-board{padding:4px 12px;}
+  .loading-board-row{grid-template-columns:24px 26px 1fr auto;gap:9px;padding:10px 2px;}
+}
+
 </style>
 </head>
 <body>
-
+  <div id="loadingOverlay">
+    <div class="loading-shell">
+  
+      <!-- fake header meniru header asli -->
+      <div class="loading-hdr">
+        <div class="loading-hdr-inner">
+          <div class="loading-brand">
+            <div class="brand-mark">🏆</div>
+            <div>
+              <div class="loading-brand-name" id="loadingName">Peluang Juara</div>
+              <div class="loading-brand-sub" id="loadingSub">Piala Dunia FIFA 2026™</div>
+            </div>
+          </div>
+          <div class="skeleton loading-lang-skel"></div>
+        </div>
+        <div class="loading-tabs">
+          <div class="loading-tab-skel active"></div>
+          <div class="loading-tab-skel"></div>
+          <div class="loading-tab-skel"></div>
+          <div class="loading-tab-skel"></div>
+          <div class="loading-tab-skel"></div>
+        </div>
+      </div>
+  
+      <!-- fake konten dasbor -->
+      <div class="loading-main">
+        <div class="loading-stat-strip">
+          <div class="loading-stat-cell"><div class="skeleton loading-stat-val"></div><div class="skeleton loading-stat-lbl"></div></div>
+          <div class="loading-stat-cell"><div class="skeleton loading-stat-val"></div><div class="skeleton loading-stat-lbl"></div></div>
+          <div class="loading-stat-cell"><div class="skeleton loading-stat-val"></div><div class="skeleton loading-stat-lbl"></div></div>
+          <div class="loading-stat-cell"><div class="skeleton loading-stat-val"></div><div class="skeleton loading-stat-lbl"></div></div>
+        </div>
+  
+        <div class="loading-section-label"><div class="bar"></div><div class="skeleton loading-label-skel"></div></div>
+  
+        <div class="loading-board">
+          <div class="loading-board-row">
+            <div class="skeleton loading-rank-skel"></div>
+            <div class="skeleton loading-flag-skel"></div>
+            <div><div class="skeleton loading-row-name-skel" style="width:62%;"></div><div class="skeleton loading-row-bar-skel" style="width:92%;"></div></div>
+            <div class="skeleton loading-row-pct-skel"></div>
+          </div>
+          <div class="loading-board-row">
+            <div class="skeleton loading-rank-skel"></div>
+            <div class="skeleton loading-flag-skel"></div>
+            <div><div class="skeleton loading-row-name-skel" style="width:48%;"></div><div class="skeleton loading-row-bar-skel" style="width:76%;"></div></div>
+            <div class="skeleton loading-row-pct-skel"></div>
+          </div>
+          <div class="loading-board-row">
+            <div class="skeleton loading-rank-skel"></div>
+            <div class="skeleton loading-flag-skel"></div>
+            <div><div class="skeleton loading-row-name-skel" style="width:55%;"></div><div class="skeleton loading-row-bar-skel" style="width:64%;"></div></div>
+            <div class="skeleton loading-row-pct-skel"></div>
+          </div>
+          <div class="loading-board-row">
+            <div class="skeleton loading-rank-skel"></div>
+            <div class="skeleton loading-flag-skel"></div>
+            <div><div class="skeleton loading-row-name-skel" style="width:40%;"></div><div class="skeleton loading-row-bar-skel" style="width:52%;"></div></div>
+            <div class="skeleton loading-row-pct-skel"></div>
+          </div>
+          <div class="loading-board-row">
+            <div class="skeleton loading-rank-skel"></div>
+            <div class="skeleton loading-flag-skel"></div>
+            <div><div class="skeleton loading-row-name-skel" style="width:50%;"></div><div class="skeleton loading-row-bar-skel" style="width:44%;"></div></div>
+            <div class="skeleton loading-row-pct-skel"></div>
+          </div>
+          <div class="loading-board-row">
+            <div class="skeleton loading-rank-skel"></div>
+            <div class="skeleton loading-flag-skel"></div>
+            <div><div class="skeleton loading-row-name-skel" style="width:35%;"></div><div class="skeleton loading-row-bar-skel" style="width:34%;"></div></div>
+            <div class="skeleton loading-row-pct-skel"></div>
+          </div>
+        </div>
+      </div>
+  
+      <!-- status sinkronisasi -->
+      <div class="loading-status-wrap">
+        <div class="loading-spinner"></div>
+        <div class="loading-status" id="loadingStatus">Menyinkronkan data live…</div>
+      </div>
+  
+    </div>
+  </div>
 <div id="app" class="boot-in">
   <!-- HEADER -->
   <header class="hdr boot-in" id="hdr">
@@ -1363,6 +1526,31 @@ function showToast(msg) {
   el.className = "toast"; el.textContent = msg;
   host.appendChild(el);
   setTimeout(() => el.remove(), 3200);
+}
+
+/* ---------------- LOADING OVERLAY CONTROLLER ---------------- */
+function updateLoadingOverlay() {
+  const overlay = document.getElementById("loadingOverlay");
+  if (!overlay) return;
+  const statusEl = document.getElementById("loadingStatus");
+  const nameEl = document.getElementById("loadingName");
+  const subEl = document.getElementById("loadingSub");
+  if (nameEl) nameEl.textContent = t("appName");
+  if (subEl) subEl.textContent = t("appSub");
+  if (statusEl) {
+    if (LiveData.status === "loading" || LiveData.status === "idle") {
+      statusEl.textContent = t("syncing");
+    } else if (LiveData.status === "ok") {
+      statusEl.textContent = t("syncOk");
+    } else {
+      statusEl.textContent = t("syncFail");
+    }
+  }
+  if (LiveData.status === "ok" || LiveData.status === "error") {
+    overlay.classList.add("hidden");
+  } else {
+    overlay.classList.remove("hidden");
+  }
 }
 
 /* ============================================================================
@@ -2320,6 +2508,9 @@ function init() {
       showToast(State.lang === "id" ? "Data live tersinkron — peluang diperbarui." : "Live data synced — odds updated.");
     }
   });
+
+  LiveData.onChange(updateLoadingOverlay);
+  updateLoadingOverlay();
 
   recomputeDerived();
   applyI18nStatic();
