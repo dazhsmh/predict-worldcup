@@ -36,6 +36,12 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{
 }
 @media (prefers-reduced-motion: reduce){
   *{animation-duration:.01ms !important;transition-duration:.01ms !important;}
+  /* Pengecualian: sparkbar tetap animasi meski OS mengaktifkan reduce-motion.
+   Gunakan dengan pertimbangan aksesibilitas — animasi ini singkat (1 detik)
+   dan bersifat dekoratif/informatif, bukan animasi berulang atau berkedip. */
+@media (prefers-reduced-motion: reduce){
+  .sparkbar-fill{transition-duration:1000ms !important;}
+}
 }
 
 /* ---------------- HEADER ---------------- */
@@ -163,7 +169,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{
   border-radius:4px;padding:1px 5px;font-family:var(--ff-mono);white-space:nowrap;display:inline-block;
 }
 .sparkbar{width:100%;height:5px;background:var(--line-soft);border-radius:3px;overflow:hidden;}
-.sparkbar-fill{height:100%;border-radius:3px;transition:width 900ms cubic-bezier(.2,.8,.2,1);}
+.sparkbar-fill{height:100%;border-radius:3px;transition:width 1000ms cubic-bezier(.2,.8,.2,1);}
 .row-pct{font-family:var(--ff-mono);font-size:17px;font-weight:700;color:var(--text);min-width:64px;text-align:right;}
 .row-pct.first{color:var(--gold);}
 .delta-chip{
@@ -1575,7 +1581,7 @@ function recomputeDerived() {
 /* ============================================================================
    RENDER: DASHBOARD TAB
    ============================================================================ */
-function renderDashboard() {
+   function renderDashboard() {
   const top10 = State.probResults.slice(0, 10);
   const maxProb = top10[0]?.probability || 0.01;
   const daysLeft = Math.max(0, daysUntil("2026-07-19"));
@@ -1594,7 +1600,7 @@ function renderDashboard() {
         <span class="flag">${FLAG_EMOJI[team.code]}</span>
         <div>
           <div class="row-name">${esc(name)}${team.host ? `<span class="host-badge">${t("host").toUpperCase()}</span>` : ""}</div>
-          <div class="sparkbar"><div class="sparkbar-fill" style="width:${widthPct}%;background:${i === 0 ? "var(--gold)" : "var(--green)"}"></div></div>
+          <div class="sparkbar"><div class="sparkbar-fill" data-target-width="${widthPct}" style="width:0%;background:${i === 0 ? "var(--gold)" : "var(--green)"}"></div></div>
         </div>
         <span class="row-pct ${i === 0 ? "first" : ""}">${fmtPct(r.probability)}</span>
       </button>`;
@@ -1623,6 +1629,25 @@ function renderDashboard() {
       </div>
     </div>
   `;
+
+  // Animasikan sparkbar dari 0% ke lebar targetnya (1 detik, kiri ke kanan).
+  // Double requestAnimationFrame memastikan browser sudah "melukis" state
+  // width:0% terlebih dahulu sebelum width diubah, sehingga transisi CSS
+  // (.sparkbar-fill{transition:width 1000ms ...}) benar-benar terpicu.
+// Animasikan sparkbar dari 0% ke lebar targetnya (1 detik, kiri ke kanan).
+  // Memaksa reflow per-elemen (membaca offsetWidth) sebelum mengubah width
+  // memastikan browser benar-benar "mencatat" state width:0% terlebih dulu,
+  // sehingga transisi CSS pasti terpicu (lebih andal daripada double rAF saja).
+  const fills = document.querySelectorAll("#panel-dashboard .sparkbar-fill[data-target-width]");
+  fills.forEach((fill) => {
+    void fill.offsetWidth; // force reflow
+  });
+  requestAnimationFrame(() => {
+    fills.forEach((fill) => {
+      const target = fill.getAttribute("data-target-width");
+      fill.style.width = target + "%";
+    });
+  });
 }
 
 /* ============================================================================
