@@ -852,10 +852,6 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{
         </div>
       </div>
       <div class="hdr-right">
-        <div class="live-pill" id="livePill">
-          <span class="live-dot" id="liveDot"></span>
-          <span data-i18n="live">LANGSUNG</span>
-        </div>
         <button class="lang-btn" id="langBtn">EN</button>
       </div>
     </div>
@@ -2441,7 +2437,7 @@ function switchTab(tabKey) {
 
 function updateSyncUI() {
   const dot = document.getElementById("liveDot");
-  dot.classList.toggle("on", LiveData.status === "ok");
+  if (dot) dot.classList.toggle("on", LiveData.status === "ok");
   const ftr = document.getElementById("ftrSync");
   if (LiveData.status === "ok" && LiveData.lastSync) {
     ftr.textContent = `${t("lastSync")}: ${LiveData.lastSync.toLocaleTimeString()}`;
