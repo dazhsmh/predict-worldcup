@@ -1,6 +1,6 @@
 Vibe coded project to analyze and predict The 2026 World Cup in real time using the Monte Carlo method based on FIFA rankings, tournament form, history, economics, demographics, and luck. Live data from: https://raw.githubusercontent.com/openfootball/worldcup.json/master/2026/worldcup.json  
 
-Website: https://worldcup.snar30.eu.org/  
+Website: https://worldcup.satnar.my.id/  
 
 The algorithm blends six measurable factors into a single Strength Score for every nation, then runs a Monte Carlo simulation of the rest of the tournament — including unplayed group matches and the entire knockout bracket — thousands of times to produce a championship probability distribution.
 
