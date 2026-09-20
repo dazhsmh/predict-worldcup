@@ -74,7 +74,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{
   border-bottom:2px solid transparent;color:var(--text-mute);font-size:12.5px;font-weight:600;
   white-space:nowrap;flex-shrink:0;transition:color .15s,border-color .15s;
 }
-.tab .tab-ic{font-size:13px;}
+.tab .tab-ic{font-size:13px; display:none;}
 .tab:hover{color:var(--text);}
 .tab.active{color:var(--text);border-bottom-color:var(--gold);}
 
@@ -184,7 +184,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{
   background:var(--bg-panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px;
   display:flex;gap:12px;align-items:flex-start;
 }
-.info-ic{font-size:20px;}
+.info-ic{font-size:20px;display: none;}
 .info-title{font-size:13.5px;color:var(--text);font-weight:600;line-height:1.3;}
 .info-sub{font-size:11.5px;color:var(--text-mute);margin-top:4px;}
 
@@ -441,7 +441,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{
   display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;
   padding:30px 0;color:var(--text-faint);text-align:center;
 }
-.ai-stage-empty .ic{font-size:28px;opacity:.5;}
+.ai-stage-empty .ic{font-size:28px;opacity:.5;display:none;}
 
 /* step list */
 .ai-steps{display:flex;flex-direction:column;gap:0;}
@@ -1901,7 +1901,7 @@ function renderOverall() {
     </div>
 
     <div class="ai-box">
-      <div class="section-label"><div class="bar" style="background:var(--blue)"></div><span class="lbl">🤖 ${t("aiAnalysis")}</span></div>
+      <div class="section-label"><div class="bar" style="background:var(--blue)"></div><span class="lbl">${t("aiAnalysis")}</span></div>
       <p>${esc(narrative)}</p>
     </div>
 
